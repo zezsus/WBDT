@@ -24,7 +24,11 @@ const NavbarComponent = () => {
             <SearchElement />
             <CartElement />
           </NavBody>
-          <NavFooter sx={{ cursor: "pointer" }}>usermenu</NavFooter>
+          <NavFooter
+            sx={{ cursor: "pointer" }}
+            onClick={() => navigate("/sign-in")}>
+            usermenu
+          </NavFooter>
         </Toolbar>
       </Container>
     </AppBar>

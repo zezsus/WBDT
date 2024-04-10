@@ -3,10 +3,12 @@
 import React from "react";
 import { IconButton, Tooltip } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import { useNavigate } from "react-router-dom";
 
 const CartElement = () => {
+  const navigate = useNavigate();
   return (
-    <IconButton>
+    <IconButton onClick={() => navigate("/cart")}>
       <Tooltip title='Cart' arrow>
         <AddShoppingCartIcon fontSize='large' sx={{ color: "#ffffff" }} />
       </Tooltip>

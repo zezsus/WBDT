@@ -10,16 +10,24 @@ import {
   styleImage,
 } from "../common/styles/productdetail.style";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import { useDispatch } from "react-redux";
+import { setCartProduct } from "../../../common/redux/productSlice";
 
 const ProductDetailComponent = () => {
   const { id } = useParams();
+
+  const dispatch = useDispatch();
   const product = listData.filter((item) => item.id === id);
+
+  const handleAddToCart = (item) => {
+    dispatch(setCartProduct(item));
+  };
 
   return (
     <ProductDetail>
       {product.map((item) => {
         return (
-          <ProductDetailContent>
+          <ProductDetailContent key={item.key}>
             <CardMedia
               component={"img"}
               image={item.image}
@@ -49,7 +57,8 @@ const ProductDetailComponent = () => {
                 <Button
                   variant='contained'
                   color='warning'
-                  sx={{ width: 180, height: 50, borderRadius: 2 }}>
+                  sx={{ width: 180, height: 50, borderRadius: 2 }}
+                  onClick={() => handleAddToCart(item)}>
                   <AddShoppingCartIcon />
                   Add to card
                 </Button>

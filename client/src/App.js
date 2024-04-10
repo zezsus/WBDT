@@ -14,6 +14,7 @@ function App() {
           return (
             <Route
               path={route.path}
+              key={route.path}
               element={
                 <Layout>
                   <Page />
