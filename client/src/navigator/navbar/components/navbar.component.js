@@ -1,7 +1,14 @@
 /** @format */
 
 import React from "react";
-import { AppBar, Toolbar, Typography, Container } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Container,
+  Avatar,
+  Box,
+} from "@mui/material";
 import SearchElement from "../elements/search.element";
 import CartElement from "../elements/cart.element";
 import { NavBody, NavFooter } from "../common/assets/navbar.style";
@@ -24,10 +31,13 @@ const NavbarComponent = () => {
             <SearchElement />
             <CartElement />
           </NavBody>
-          <NavFooter
-            sx={{ cursor: "pointer" }}
-            onClick={() => navigate("/sign-in")}>
-            usermenu
+          <NavFooter sx={{ cursor: "pointer" }}>
+            <Avatar
+              alt='avata'
+              src='/static/images/avatar/1.jpg'
+              onClick={() => navigate("/profile")}
+            />
+            <Box onClick={() => navigate("/sign-in")}>usermenu</Box>
           </NavFooter>
         </Toolbar>
       </Container>

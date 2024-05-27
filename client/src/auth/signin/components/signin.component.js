@@ -16,7 +16,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import {  useState } from "react";
 import {
   FormLoginLeft,
   FormLoginRight,
@@ -24,11 +24,7 @@ import {
 
 const SignInComponent = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    // formState: { errors },
-  } = useForm();
+  const { register, handleSubmit } = useForm();
 
   const navigate = useNavigate();
 

@@ -1,5 +1,7 @@
 /** @format */
-const AuthService = require("../services/auth.service");
+const User = require("../modals/user.modal");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const SignUp = async (req, res) => {
   try {
@@ -28,8 +30,29 @@ const SignUp = async (req, res) => {
       });
     }
 
-    const respone = await AuthService.SignUp(req.body);
-    return res.status(200).json(respone);
+    const checkEmail = await User.findOne({ email });
+    if (checkEmail) {
+      return res.status(400).json({
+        status: false,
+        message: "Email đã tồn tại",
+      });
+    }
+    const hashPassword = bcrypt.hashSync(password, 10);
+    const newUser = User({
+      username,
+      email,
+      password: hashPassword,
+      address: null,
+      phone: null,
+    });
+
+    await newUser.save();
+
+    return res.status(200).json({
+      status: true,
+      message: "Đăng ký thành công",
+      data: newUser,
+    });
   } catch (error) {
     return res.status(500).json({
       status: false,
@@ -58,8 +81,33 @@ const SignIn = async (req, res) => {
       });
     }
 
-    const respone = await AuthService.SignIn(req.body);
-    return res.status(200).json(respone);
+    const checkUser = await User.findOne({ email });
+    if (!checkUser) {
+      return res.status(400).josn({
+        status: false,
+        message: "Tài khoản hoặc mật khẩu không chính xác",
+      });
+    }
+
+    const comparePassword = bcrypt.compare(password, checkUser.password);
+    if (!comparePassword) {
+      return res.status(400).josn({
+        status: false,
+        message: "Tài khoản hoặc mật khẩu không chính xác",
+      });
+    }
+
+    const accessToken = jwt.sign(
+      { userId: checkUser._id, isAdmin: checkUser.isAdmin },
+      process.env.ACCESSTOKEN
+    );
+
+    return res.status(200).json({
+      status: true,
+      message: "Đăng nhập thành công",
+      data: checkUser,
+      accessToken,
+    });
   } catch (error) {
     return res.status(500).json({
       status: false,
@@ -79,10 +127,30 @@ const UpdateUser = async (req, res) => {
         message: "Vui lòng chọn người dùng",
       });
     }
-    const respone = await AuthService.UpdateUser(userId, data);
-    return res.status(200).json(respone);
+
+    const checkUser = await User.findOne({
+      _id: userId,
+    });
+
+    if (!checkUser) {
+      return res.status(400).json({
+        status: false,
+        message: "Người dùng không tồn tại",
+      });
+    }
+
+    const updateUser = await User.findByIdAndUpdate(userId, data, {
+      new: true,
+    });
+
+    return res.status(200).json({
+      status: true,
+      message: "Cập nhật thông tin thành công",
+      data: updateUser,
+    });
   } catch (error) {
     return res.status(500).json({
+      status: false,
       message: error,
     });
   }
@@ -98,10 +166,28 @@ const DeleteUser = async (req, res) => {
         message: "Vui lòng chọn người dùng",
       });
     }
-    const respone = await AuthService.DeleteUser(userId);
-    return res.status(200).json(respone);
+
+    const checkUser = await User.findOne({
+      _id: userId,
+    });
+
+    if (!checkUser) {
+      return res.status(400).json({
+        status: false,
+        message: "Người dùng không tồn tại",
+      });
+    }
+
+    const deleteUser = await User.findByIdAndDelete(userId);
+
+    return res.status(200).json({
+      status: true,
+      message: "Xóa thành công",
+      deleteUser,
+    });
   } catch (error) {
     return res.status(500).json({
+      status: false,
       message: error,
     });
   }
@@ -109,8 +195,11 @@ const DeleteUser = async (req, res) => {
 
 const GetAllUser = async (req, res) => {
   try {
-    const respone = await AuthService.GetAllUser();
-    return res.status(200).json(respone);
+    const allUser = await User.find();
+    return res.status(200).json({
+      status: true,
+      data: allUser,
+    });
   } catch (error) {
     return res.status(500).json({
       status: false,
@@ -129,10 +218,33 @@ const GetDetailUser = async (req, res) => {
         message: "Vui lòng chọn người dùng",
       });
     }
-    const respone = await AuthService.GetDetailUser(userId);
-    return res.status(200).json(respone);
+
+    const detailUser = await User.findOne({ _id: userId });
+    if (!detailUser) {
+      return {
+        status: false,
+        message: "Người dùng không tồn tại",
+      };
+    }
+
+    return res.status(200).json({ status: true, data: detailUser });
   } catch (error) {
     return res.status(500).json({
+      status: false,
+      message: error,
+    });
+  }
+};
+
+const LogOut = async (req, res) => {
+  try {
+    return res.status(200).json({
+      status: true,
+      message: "Đăng xuất thành công",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: true,
       message: error,
     });
   }
@@ -145,4 +257,5 @@ module.exports = {
   DeleteUser,
   GetAllUser,
   GetDetailUser,
+  LogOut,
 };
