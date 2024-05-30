@@ -16,7 +16,7 @@ productRouter.delete(
   authMiddleware,
   productController.DeleteProduct
 );
-productRouter.get("/get-all-product", productController.GetAllProduct);
+productRouter.get("/get-product", productController.GetAllProduct);
 productRouter.get(
   "/get-detail-product/:id",
   productController.GetDettailProduct

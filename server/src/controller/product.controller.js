@@ -127,17 +127,52 @@ const DeleteProduct = async (req, res) => {
 };
 
 const GetAllProduct = async (req, res) => {
+  const limit = 5;
+  let page = req.query.page;
+  const sort = req.query.sort;
+  const filter = req.query.filter;
+
   try {
-    const limit = 5;
-    let page = req.query.page;
+    const totalPage = await Product.countDocuments();
+
+    if (filter) {
+      let label = filter[0];
+      const productFilter = await Product.find({
+        [label]: { $regex: filter[1] },
+      });
+      return res.status(200).json({
+        status: true,
+        data: productFilter,
+        pageCurrent: page,
+        totalPage: Math.ceil(totalPage / limit),
+      });
+    }
+
     if (page) {
       page = parseInt(page);
       page < 0 ? (page = 1) : page;
       const skip = (page - 1) * limit;
+      if (sort) {
+        let objectSort = {};
+        objectSort[sort[1]] = sort[0];
+        const productSort = await Product.find()
+          .limit(limit)
+          .skip(skip)
+          .sort(objectSort);
+        return res.status(200).json({
+          status: true,
+          data: productSort,
+          pageCurrent: page,
+          totalPage: Math.ceil(totalPage / limit),
+        });
+      }
+
       const productPage = await Product.find().limit(limit).skip(skip);
       return res.status(200).json({
         status: true,
         data: productPage,
+        pageCurrent: page,
+        totalPage: Math.ceil(totalPage / limit),
       });
     }
 
@@ -145,6 +180,8 @@ const GetAllProduct = async (req, res) => {
     return res.status(200).json({
       status: true,
       data: allProduct,
+      page: page,
+      totalPage: Math.ceil(totalPage / limit),
     });
   } catch (error) {
     return res.status(500).json({
@@ -153,6 +190,7 @@ const GetAllProduct = async (req, res) => {
     });
   }
 };
+
 const GetDettailProduct = async (req, res) => {
   const productId = req.params.id;
   if (!productId) {
