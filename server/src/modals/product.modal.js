@@ -25,7 +25,7 @@ const ProductSchema = new Schema(
     countInStock: {
       type: Number,
       required: true,
-    },
+    }, //số lượng sản phẩm trong kho
     rating: {
       type: Number,
       required: true,
