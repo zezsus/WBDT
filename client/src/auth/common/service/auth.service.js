@@ -17,6 +17,7 @@ export const signUpService = async (newUser) => {
     const res = await axios.post(`${authRouter}/sign-up`, newUser);
     return res.data;
   } catch (error) {
+    console.log("Lỗi");
     throw error;
   }
 };

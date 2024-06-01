@@ -38,3 +38,21 @@ export const AuthFooter = styled(Box)({
   flexDirection: "column",
   gap: "0.8rem",
 });
+
+export const styleError = {
+  backgroundColor: "red",
+  width: "100%",
+  color: "white",
+  padding: "10px",
+  textAlign: "center",
+  borderRadius: "5px",
+};
+
+export const styleSuccess = {
+  backgroundColor: "green",
+  width: "100%",
+  color: "white",
+  padding: "10px",
+  textAlign: "center",
+  borderRadius: "5px",
+};

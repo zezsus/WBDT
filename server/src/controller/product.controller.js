@@ -134,7 +134,6 @@ const GetAllProduct = async (req, res) => {
 
   try {
     const totalPage = await Product.countDocuments();
-
     if (filter) {
       let label = filter[0];
       const productFilter = await Product.find({
@@ -143,8 +142,15 @@ const GetAllProduct = async (req, res) => {
       return res.status(200).json({
         status: true,
         data: productFilter,
-        pageCurrent: page,
-        totalPage: Math.ceil(totalPage / limit),
+      });
+    }
+    if (sort) {
+      let objectSort = {};
+      objectSort[sort[1]] = sort[0];
+      const productSort = await Product.find().sort(objectSort);
+      return res.status(200).json({
+        status: true,
+        data: productSort,
       });
     }
 
@@ -152,20 +158,6 @@ const GetAllProduct = async (req, res) => {
       page = parseInt(page);
       page < 0 ? (page = 1) : page;
       const skip = (page - 1) * limit;
-      if (sort) {
-        let objectSort = {};
-        objectSort[sort[1]] = sort[0];
-        const productSort = await Product.find()
-          .limit(limit)
-          .skip(skip)
-          .sort(objectSort);
-        return res.status(200).json({
-          status: true,
-          data: productSort,
-          pageCurrent: page,
-          totalPage: Math.ceil(totalPage / limit),
-        });
-      }
 
       const productPage = await Product.find().limit(limit).skip(skip);
       return res.status(200).json({

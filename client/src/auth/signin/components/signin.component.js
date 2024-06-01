@@ -7,8 +7,11 @@ import {
   AuthForm,
   AuthHeader,
   Div,
+  styleError,
+  styleSuccess,
 } from "../../common/assets/auth.style";
 import {
+  Box,
   Button,
   Checkbox,
   FormControlLabel,
@@ -16,41 +19,68 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import {  useState } from "react";
+import { useState } from "react";
 import {
   FormLoginLeft,
   FormLoginRight,
 } from "../../common/assets/signin.style";
+import { useSignIn } from "../../common/hook/auth.hook";
 
 const SignInComponent = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { register, handleSubmit } = useForm();
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
+  const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
 
-  const handleSignIn = () => {
-    navigate("/");
+  const signIn = useSignIn();
+
+  const handleSignIn = (data) => {
+    const { email, password } = data;
+    signIn.mutate(
+      { email, password },
+      {
+        onSuccess: () => {
+          navigate("/");
+        },
+        onError: (error) => {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            setErrorMsg(error.response.data.message);
+            setTimeout(() => setErrorMsg(""), 3000);
+          }
+        },
+      }
+    );
   };
   return (
     <Div>
-      {/* <ToastMessageComponent /> */}
       <AuthForm onSubmit={handleSubmit(handleSignIn)}>
         <FormLoginLeft>
-          <AuthHeader variant='h5'>Sign In</AuthHeader>
+          <AuthHeader variant='h5'>Đăng nhập</AuthHeader>
           <Typography
             variant='body1'
             component={"div"}
             sx={{ textAlign: "center" }}>
-            {`SignUp an account if you are a new member`}
+            {`Nếu bạn chưa có tài khoản hãy `}
           </Typography>
           <Button
             variant='outlined'
             onClick={() => navigate("/sign-up")}
             sx={{ color: "white" }}>
-            Sign Up
+            Đăng ký
           </Button>
         </FormLoginLeft>
         <FormLoginRight>
+          <Box>
+            {errorMsg && <Box style={styleError}>{errorMsg}</Box>}
+            {successMsg && <Box style={styleSuccess}>{successMsg}</Box>}
+          </Box>
+
           <AuthBody>
             <TextField
               type='email'
@@ -63,7 +93,7 @@ const SignInComponent = () => {
             {showPassword ? (
               <TextField
                 variant='outlined'
-                label='Password'
+                label='Mật khẩu'
                 size='small'
                 fullWidth
                 {...register("password")}
@@ -72,7 +102,7 @@ const SignInComponent = () => {
               <TextField
                 type='password'
                 variant='outlined'
-                label='Password'
+                label='Mật khẩu'
                 size='small'
                 fullWidth
                 {...register("password")}
@@ -84,7 +114,7 @@ const SignInComponent = () => {
                 control={
                   <Checkbox onClick={() => setShowPassword(!showPassword)} />
                 }
-                label='Show Password'
+                label='Hiển thị mật khẩu'
               />
             </FormGroup>
           </AuthBody>
@@ -94,7 +124,7 @@ const SignInComponent = () => {
               sx={{ width: 150 }}
               variant='contained'
               color='primary'>
-              sign in
+              Đăng nhập
             </Button>
           </AuthFooter>
         </FormLoginRight>

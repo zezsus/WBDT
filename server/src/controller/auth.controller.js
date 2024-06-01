@@ -26,7 +26,7 @@ const SignUp = async (req, res) => {
     if (password !== comfirmPassword) {
       return res.status(400).json({
         status: false,
-        message: "Nhập lại mật khẩu không chính xác",
+        message: "Mật khẩu và nhập lại mật khẩu phải giống nhau",
       });
     }
 
@@ -83,15 +83,15 @@ const SignIn = async (req, res) => {
 
     const checkUser = await User.findOne({ email });
     if (!checkUser) {
-      return res.status(400).josn({
+      return res.status(400).json({
         status: false,
         message: "Tài khoản hoặc mật khẩu không chính xác",
       });
     }
 
-    const comparePassword = bcrypt.compare(password, checkUser.password);
+    const comparePassword = await bcrypt.compare(password, checkUser.password);
     if (!comparePassword) {
-      return res.status(400).josn({
+      return res.status(400).json({
         status: false,
         message: "Tài khoản hoặc mật khẩu không chính xác",
       });

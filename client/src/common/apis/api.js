@@ -1,3 +1,4 @@
 /** @format */
 
-export const authRouter = "http://localhost:8000/api/auth";
+const router = "http://localhost:8000/api";
+export const authRouter = `${router}/auth`

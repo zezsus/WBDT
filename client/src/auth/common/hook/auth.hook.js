@@ -5,18 +5,20 @@ import { signInService, signUpService } from "../service/auth.service";
 
 export const usePostNewtUser = () => {
   const queryClient = useQueryClient();
-  return useMutation((newUser) => signUpService(newUser), {
+  return useMutation({
+    mutationFn: (newUser) => signUpService(newUser),
     onSuccess: () => {
-      queryClient.invalidateQueries(["user"]);
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 };
 
 export const useSignIn = () => {
   const queryClient = useQueryClient();
-  return useMutation((user) => signInService(user), {
+  return useMutation({
+    mutationFn: (newUser) => signInService(newUser),
     onSuccess: () => {
-      queryClient.invalidateQueries(["user"]);
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 };
