@@ -8,12 +8,13 @@ const authMiddleware = (req, res, next) => {
     const token = authHeader.split(" ")[1];
     jwt.verify(token, process.env.ACCESSTOKEN, (error, user) => {
       if (error) {
-        return res.status(401).json({
+        return res.status(403).json({
           status: false,
           message: "Xác thực thất bại",
         });
       }
       if (user?.isAdmin) {
+        req.user = user;
         next();
       } else {
         return res.status(403).json({
@@ -35,17 +36,21 @@ const authUserMiddleWare = (req, res, next) => {
   if (authHeader) {
     const token = authHeader.split(" ")[1];
     const userId = req.params.id;
+
+    console.log("userId", userId);
+    console.log("token", token);
     jwt.verify(token, process.env.ACCESSTOKEN, (error, user) => {
       if (error) {
-        return res.status(404).json({
+        return res.status(403).json({
           status: false,
           message: "Xác thực thất bại",
         });
       }
-      if (user?.isAdmin || user?.id === userId) {
+      if (user?.isAdmin || user?.userId === userId) {
+        req.user = user; // Gán user vào req để dùng sau này nếu cần
         next();
       } else {
-        return res.status(404).json({
+        return res.status(403).json({
           status: false,
           message: "Không có quyền truy cập",
         });

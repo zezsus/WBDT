@@ -10,25 +10,22 @@ export const useGetALlUser = () => {
   });
 };
 
-export const useGetDetailUser = () => {
-  return useQuery({
-    queryKey: ["user"],
-    queryFn: (id) => getAllUser(id),
-  });
-};
-
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
-  return useMutation((id, user) => updateUser(id, user), {
-    onSuccess: () => {
-      queryClient.invalidateQueries(["user"]);
+  return useMutation({
+    mutationFn: ({ userId, userData, accessToken }) => {
+      return updateUser(userId, userData, accessToken);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["userDetail", data._id] });
     },
   });
 };
 
 export const useDeleteUser = () => {
   const queryClient = useQueryClient();
-  return useMutation((id) => deleteUser(id), {
+  return useMutation({
+    mutationFn: (id, accessToken) => deleteUser(id, accessToken),
     onSuccess: () => {
       queryClient.invalidateQueries(["user"]);
     },

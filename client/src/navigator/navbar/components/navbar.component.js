@@ -1,6 +1,6 @@
 /** @format */
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -13,8 +13,24 @@ import SearchElement from "../elements/search.element";
 import CartElement from "../elements/cart.element";
 import { NavBody, NavFooter } from "../common/assets/navbar.style";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const NavbarComponent = () => {
+  const [userId, setUserId] = useState(null);
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      const decoded = jwtDecode(accessToken);
+      if (decoded?.userId) {
+        setUserId(decoded.userId);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/sign-in");
+  };
   const navigate = useNavigate();
   return (
     <AppBar position='static'>
@@ -35,9 +51,9 @@ const NavbarComponent = () => {
             <Avatar
               alt='avata'
               src='/static/images/avatar/1.jpg'
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate(`/profile/${userId}`)}
             />
-            <Box onClick={() => navigate("/sign-in")}>usermenu</Box>
+            <Box onClick={handleLogout}>usermenu</Box>
           </NavFooter>
         </Toolbar>
       </Container>

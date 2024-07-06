@@ -1,6 +1,6 @@
 /** @format */
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   AuthBody,
   AuthFooter,
@@ -33,6 +33,7 @@ const SignInComponent = () => {
 
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const signIn = useSignIn();
 
@@ -41,8 +42,12 @@ const SignInComponent = () => {
     signIn.mutate(
       { email, password },
       {
-        onSuccess: () => {
-          navigate("/");
+        onSuccess: (data) => {
+          if (!localStorage.getItem("accessToken")) {
+            localStorage.setItem("accessToken", data?.accessToken);
+          }
+          location?.state ? navigate(location?.state) : navigate("/");
+          reset();
         },
         onError: (error) => {
           if (
@@ -57,6 +62,7 @@ const SignInComponent = () => {
       }
     );
   };
+
   return (
     <Div>
       <AuthForm onSubmit={handleSubmit(handleSignIn)}>
@@ -68,6 +74,7 @@ const SignInComponent = () => {
             sx={{ textAlign: "center" }}>
             {`Nếu bạn chưa có tài khoản hãy `}
           </Typography>
+
           <Button
             variant='outlined'
             onClick={() => navigate("/sign-up")}
@@ -75,6 +82,7 @@ const SignInComponent = () => {
             Đăng ký
           </Button>
         </FormLoginLeft>
+
         <FormLoginRight>
           <Box>
             {errorMsg && <Box style={styleError}>{errorMsg}</Box>}
@@ -118,6 +126,7 @@ const SignInComponent = () => {
               />
             </FormGroup>
           </AuthBody>
+
           <AuthFooter>
             <Button
               type='submit'

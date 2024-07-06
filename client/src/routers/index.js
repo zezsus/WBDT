@@ -28,7 +28,7 @@ export const routers = [
   },
 
   {
-    path: "/profile",
+    path: "/profile/:id",
     page: ProfileComponent,
     isShowHeader: true,
   },
