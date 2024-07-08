@@ -6,6 +6,7 @@ const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (authHeader) {
     const token = authHeader.split(" ")[1];
+
     jwt.verify(token, process.env.ACCESSTOKEN, (error, user) => {
       if (error) {
         return res.status(403).json({
@@ -37,8 +38,6 @@ const authUserMiddleWare = (req, res, next) => {
     const token = authHeader.split(" ")[1];
     const userId = req.params.id;
 
-    console.log("userId", userId);
-    console.log("token", token);
     jwt.verify(token, process.env.ACCESSTOKEN, (error, user) => {
       if (error) {
         return res.status(403).json({

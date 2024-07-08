@@ -26,7 +26,6 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(userData.avatar || "");
 
   const dispatch = useDispatch();
@@ -43,7 +42,6 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
     }
 
     const userData = { ...data, avatar: avatarPreview };
-    console.log(userData);
 
     updateUser.mutate(
       { userId, userData, accessToken },
@@ -122,7 +120,7 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
       </Box>
       {userData && (
         <Content>
-          <Header>Cập nhật thông tin cá nhân</Header>
+          <Header>Cập nhật thông tin</Header>
           <Body>
             <UserAvatar>
               <Avatar alt='Avatar' src={avatarPreview} style={avata} />

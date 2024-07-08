@@ -3,11 +3,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { getDetailUser } from "../services/navigator.service";
 
-export const useGetDetailUser = (id, accessToken) => {
+export const useGetDetailUser = (userId, accessToken) => {
   return useQuery({
-    queryKey: ["userDetail", id, accessToken],
-    queryFn: () => {
-      return getDetailUser(id, accessToken);
-    },
+    queryKey: ["userDetail", userId],
+    queryFn: () => getDetailUser(userId, accessToken),
   });
 };

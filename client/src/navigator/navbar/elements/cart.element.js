@@ -9,7 +9,7 @@ const CartElement = () => {
   const navigate = useNavigate();
   return (
     <IconButton onClick={() => navigate("/cart")}>
-      <Tooltip title='Cart' arrow>
+      <Tooltip title='Giỏ hàng' arrow>
         <AddShoppingCartIcon fontSize='large' sx={{ color: "#ffffff" }} />
       </Tooltip>
     </IconButton>

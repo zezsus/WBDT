@@ -16,24 +16,4 @@ export const updateUser = async (id, data, accessToken) => {
   }
 };
 
-export const deleteUser = async (id, accessToken) => {
-  try {
-    const res = await axios.delete(`${authRouter}/delete-user/${id}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    return res.data;
-  } catch (error) {
-    throw error;
-  }
-};
 
-export const getAllUser = async () => {
-  try {
-    const res = await axios.get(`${authRouter}/get-all-user`);
-    return res.data.data;
-  } catch (error) {
-    throw error;
-  }
-};

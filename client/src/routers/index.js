@@ -1,5 +1,6 @@
 /** @format */
 
+import SystemManagementCompoent from "../admin/components/systemManagement.component";
 import SignInComponent from "../auth/signin/components/signin.component";
 import SignUpComponent from "../auth/signup/component/signup.component";
 import NotFound from "../components/notfound.component";
@@ -28,8 +29,14 @@ export const routers = [
   },
 
   {
-    path: "/profile/:id",
+    path: "/profile",
     page: ProfileComponent,
+    isShowHeader: true,
+  },
+
+  {
+    path: "/system-management",
+    page: SystemManagementCompoent,
     isShowHeader: true,
   },
 

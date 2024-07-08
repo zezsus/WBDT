@@ -13,12 +13,11 @@ import {
 } from "../common/assets/profile.styles";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { useQuery } from "@tanstack/react-query";
-import { getDetailUser } from "../../common/services/navigator.service";
 import SpinnerComponent from "../../../components/spinner.component";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsUpdate } from "../../../common/redux/userSlice";
 import UpdateProfileComponent from "./updateProfile.component";
+import { useGetDetailUser } from "../../common/hook/navigator.hook";
 
 const ProfileComponent = () => {
   const [userId, setUserId] = useState(null);
@@ -41,10 +40,7 @@ const ProfileComponent = () => {
     dispatch(setIsUpdate(true));
   };
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["userDetail", userId],
-    queryFn: () => getDetailUser(userId, accessToken),
-  });
+  const { data, isLoading, error } = useGetDetailUser(userId, accessToken);
 
   if (isLoading) {
     return (
