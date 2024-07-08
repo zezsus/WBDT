@@ -16,8 +16,9 @@ import { jwtDecode } from "jwt-decode";
 import SpinnerComponent from "../../../components/spinner.component";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsUpdate } from "../../../common/redux/userSlice";
-import UpdateProfileComponent from "./updateProfile.component";
 import { useGetDetailUser } from "../../common/hook/navigator.hook";
+import UpdateUserComponent from "./updateProfile.component";
+import MessageComponent from "../../../components/message.component";
 
 const ProfileComponent = () => {
   const [userId, setUserId] = useState(null);
@@ -73,6 +74,7 @@ const ProfileComponent = () => {
 
   return (
     <Box>
+      <MessageComponent />
       {!isUpdate ? (
         <Profile>
           {data && (
@@ -120,7 +122,7 @@ const ProfileComponent = () => {
           )}
         </Profile>
       ) : (
-        <UpdateProfileComponent
+        <UpdateUserComponent
           userData={data}
           userId={userId}
           accessToken={accessToken}

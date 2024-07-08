@@ -6,16 +6,16 @@ import { deleteUser, getAllUser } from "../services/user.services";
 export const useDeleteUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({userId, accessToken}) => deleteUser(userId, accessToken),
+    mutationFn: ({ userId, accessToken }) => deleteUser(userId, accessToken),
     onSuccess: () => {
-      queryClient.invalidateQueries(["user"]);
+      queryClient.invalidateQueries(["users"]);
     },
   });
 };
 
 export const useGetALlUser = (accessToken) => {
   return useQuery({
-    queryKey: ["user"],
+    queryKey: ["users"],
     queryFn: () => getAllUser(accessToken),
   });
 };

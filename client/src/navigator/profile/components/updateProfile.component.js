@@ -1,6 +1,6 @@
 /** @format */
 
-import { Avatar, Box, Button, Input, TextField } from "@mui/material";
+import { Avatar, Box, Button, Input, Modal, TextField } from "@mui/material";
 import {
   avata,
   Body,
@@ -12,23 +12,22 @@ import {
   UserInfo,
 } from "../common/assets/updateprofile.styles";
 import SpinnerComponent from "../../../components/spinner.component";
-import { useDispatch } from "react-redux";
-import { setIsUpdate } from "../../../common/redux/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setErrorMessage,
+  setIsUpdate,
+  setSuccessMessage,
+} from "../../../common/redux/userSlice";
 import { useForm } from "react-hook-form";
 import { useUpdateUser } from "../../../common/hook/user.hook";
-import {
-  styleError,
-  styleSuccess,
-} from "../../../auth/common/assets/auth.style";
 import { useState } from "react";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { style } from "../../../admin/userManagerment/common/assets/modal.styles";
 
 const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
-  const [successMsg, setSuccessMsg] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
   const [avatarPreview, setAvatarPreview] = useState(userData.avatar || "");
-
   const dispatch = useDispatch();
+  const isUpdate = useSelector((state) => state.users.isUpdate);
 
   const { register, handleSubmit } = useForm({
     defaultValues: userData,
@@ -47,11 +46,8 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
       { userId, userData, accessToken },
       {
         onSuccess: () => {
-          setSuccessMsg("Cập nhật thông tin thành công");
-          setTimeout(() => {
-            setSuccessMsg("");
-            dispatch(setIsUpdate(false));
-          }, 3000);
+          dispatch(setSuccessMessage("Cập nhật thông tin thành công"));
+          dispatch(setIsUpdate(false));
         },
         onError: (error) => {
           if (
@@ -59,8 +55,8 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
             error.response.data &&
             error.response.data.message
           ) {
-            setErrorMsg(error.response.data.message);
-            setTimeout(() => setErrorMsg(""), 3000);
+            dispatch(setErrorMessage(error.response.data.message));
+            dispatch(setIsUpdate(false));
           }
         },
       }
@@ -113,91 +109,94 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
   }
 
   return (
-    <Profile onSubmit={handleSubmit(handleSave)}>
-      <Box>
-        {errorMsg && <Box style={styleError}>{errorMsg}</Box>}
-        {successMsg && <Box style={styleSuccess}>{successMsg}</Box>}
-      </Box>
-      {userData && (
-        <Content>
-          <Header>Cập nhật thông tin</Header>
-          <Body>
-            <UserAvatar>
-              <Avatar alt='Avatar' src={avatarPreview} style={avata} />
-              <Button
-                variant='contained'
-                component='label'
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}>
-                <CloudUploadIcon
-                  fontSize='large'
-                  style={{ paddingRight: 10 }}
-                />
-                Thay đổi
-                <Input
-                  type='file'
-                  accept='image/*'
-                  hidden
-                  onChange={handleOnChangeAvatar}
-                  style={{ display: "none" }}
-                />
-              </Button>
-            </UserAvatar>
+    <Modal
+      open={isUpdate}
+      onClose={handleClose}
+      aria-labelledby='modal-modal-title'
+      aria-describedby='modal-modal-description'>
+      <Box sx={style}>
+        <Profile onSubmit={handleSubmit(handleSave)}>
+          {userData && (
+            <Content>
+              <Header>Cập nhật thông tin</Header>
+              <Body>
+                <UserAvatar>
+                  <Avatar alt='Avatar' src={avatarPreview} style={avata} />
+                  <Button
+                    variant='contained'
+                    component='label'
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}>
+                    <CloudUploadIcon
+                      fontSize='large'
+                      style={{ paddingRight: 10 }}
+                    />
+                    Thay đổi
+                    <Input
+                      type='file'
+                      accept='image/*'
+                      hidden
+                      onChange={handleOnChangeAvatar}
+                      style={{ display: "none" }}
+                    />
+                  </Button>
+                </UserAvatar>
 
-            <UserInfo>
-              <TextField
-                label='Họ tên'
-                variant='outlined'
-                size='small'
-                {...register("username")}
-                fullWidth
-              />
-              <TextField
-                label='Số điện thoại'
-                variant='outlined'
-                size='small'
-                {...register("phone")}
-                fullWidth
-              />
-              <TextField
-                label='Địa chỉ'
-                size='small'
-                variant='outlined'
-                {...register("address")}
-                fullWidth
-              />
-              <TextField
-                label='Email'
-                size='small'
-                variant='outlined'
-                {...register("email")}
-                disabled
-                fullWidth
-              />
-            </UserInfo>
-          </Body>
-          <Footer>
-            <Button
-              type='submit'
-              variant='contained'
-              style={{ width: "max-content" }}
-              color='warning'>
-              Lưu
-            </Button>
-            <Button
-              variant='contained'
-              style={{ width: "max-content", color: "white" }}
-              color='secondary'
-              onClick={handleClose}>
-              Quay Lại
-            </Button>
-          </Footer>
-        </Content>
-      )}
-    </Profile>
+                <UserInfo>
+                  <TextField
+                    label='Họ tên'
+                    variant='outlined'
+                    size='small'
+                    {...register("username")}
+                    fullWidth
+                  />
+                  <TextField
+                    label='Số điện thoại'
+                    variant='outlined'
+                    size='small'
+                    {...register("phone")}
+                    fullWidth
+                  />
+                  <TextField
+                    label='Địa chỉ'
+                    size='small'
+                    variant='outlined'
+                    {...register("address")}
+                    fullWidth
+                  />
+                  <TextField
+                    label='Email'
+                    size='small'
+                    variant='outlined'
+                    {...register("email")}
+                    disabled
+                    fullWidth
+                  />
+                </UserInfo>
+              </Body>
+              <Footer>
+                <Button
+                  type='submit'
+                  variant='contained'
+                  style={{ width: "max-content" }}
+                  color='warning'>
+                  Lưu
+                </Button>
+                <Button
+                  variant='contained'
+                  style={{ width: "max-content", backgroundColor: "gray" }}
+                  onClick={handleClose}>
+                  Quay Lại
+                </Button>
+              </Footer>
+            </Content>
+          )}
+        </Profile>
+      </Box>
+    </Modal>
   );
 };
 

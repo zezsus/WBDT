@@ -19,7 +19,7 @@ const MessageComponent = () => {
   }, [successMessage, errorMessage, dispatch]);
 
   return (
-    <Box>
+    <Box sx={{ pt: 2 }} style={{ boxSizing: "border-box" }}>
       {errorMessage && <ErrorMsg>{errorMessage}</ErrorMsg>}
       {successMessage && <SuccessMsg>{successMessage}</SuccessMsg>}
     </Box>

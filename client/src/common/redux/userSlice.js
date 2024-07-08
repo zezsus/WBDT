@@ -4,7 +4,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isUpdate: false,
-  isAdminUpdate: false,
   isAdminDelete: false,
   successMessage: "",
   errorMessage: "",
@@ -16,9 +15,6 @@ export const userSlice = createSlice({
   reducers: {
     setIsUpdate: (state, actions) => {
       state.isUpdate = actions.payload;
-    },
-    setAdminUpdate: (state, actions) => {
-      state.isAdminUpdate = actions.payload;
     },
     setAdminDelete: (state, actions) => {
       state.isAdminDelete = actions.payload;
@@ -34,7 +30,6 @@ export const userSlice = createSlice({
 
 export const {
   setIsUpdate,
-  setAdminUpdate,
   setAdminDelete,
   setSuccessMessage,
   setErrorMessage,

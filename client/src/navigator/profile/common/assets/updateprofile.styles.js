@@ -9,7 +9,6 @@ export const Profile = styled("form")({
   justifyContent: "center",
   gap: "2rem",
   width: "100%",
-  height: "90vh",
 });
 
 export const Content = styled(Box)({

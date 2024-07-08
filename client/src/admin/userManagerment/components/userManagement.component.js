@@ -17,14 +17,11 @@ import SpinnerComponent from "../../../components/spinner.component";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import EditCalendarOutlinedIcon from "@mui/icons-material/EditCalendarOutlined";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setAdminDelete,
-  setAdminUpdate,
-} from "../../../common/redux/userSlice";
-import AdimUpdateUser from "./updateUser.component";
+import { setAdminDelete, setIsUpdate } from "../../../common/redux/userSlice";
 import AdimDeleteUser from "./deleteUser.component";
 import { useGetALlUser } from "../../common/hook/user.hook";
 import MessageComponent from "../../../components/message.component";
+import UpdateUserComponent from "../../../navigator/profile/components/updateProfile.component";
 
 const UserManagementComponent = () => {
   const [page, setPage] = useState(0);
@@ -32,6 +29,7 @@ const UserManagementComponent = () => {
   const [accessToken, setAccessToken] = useState(null);
   const [userUpdateId, setUserUpdateId] = useState(null);
   const [userDeleteId, setUserDeleteId] = useState(null);
+  const [userUpdate, setUserUpdate] = useState(null);
 
   const columns = [
     { id: "username", label: "Họ Tên", minWidth: 100 },
@@ -57,8 +55,9 @@ const UserManagementComponent = () => {
       minWidth: 80,
     },
   ];
+
   const dispatch = useDispatch();
-  const isAdminUpdate = useSelector((state) => state.users.isAdminUpdate);
+  const isUpdate = useSelector((state) => state.users.isUpdate);
   const isAdminDelete = useSelector((state) => state.users.isAdminDelete);
   const successMessage = useSelector((state) => state.users.successMessage);
   const errorMessage = useSelector((state) => state.users.errorMessage);
@@ -72,18 +71,19 @@ const UserManagementComponent = () => {
 
   const { data, isLoading } = useGetALlUser(accessToken);
 
-  const handleChangePage = (newPage) => {
+  const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (e) => {
-    setRowsPerPage(+e.target.value);
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
     setPage(0);
   };
 
-  const handleAdminUpdate = (id) => {
-    dispatch(setAdminUpdate(true));
-    setUserUpdateId(id);
+  const handleAdminUpdate = (user) => {
+    setUserUpdate(user);
+    dispatch(setIsUpdate(true));
+    setUserUpdateId(user._id);
   };
 
   const handleAdminDelete = (id) => {
@@ -105,11 +105,16 @@ const UserManagementComponent = () => {
     );
   }
 
+  const paginatedData = data?.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   return (
     <Paper
       sx={{ width: "100%", overflow: "hidden", boxShadow: "1px 1px 10px" }}>
       <MessageComponent />
-      <TableContainer sx={{ maxHeight: 480 }}>
+      <TableContainer sx={{ maxHeight: 450 }}>
         <Table stickyHeader aria-label='sticky table'>
           <TableHead>
             <TableRow>
@@ -124,48 +129,43 @@ const UserManagementComponent = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.map((user) => {
+            {paginatedData?.map((user) => {
               return (
                 <TableRow hover role='checkbox' tabIndex={-1} key={user.id}>
-                  {columns
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((column) => {
-                      const value = user[column.id];
-
-                      return (
-                        <TableCell key={column.id} align={"center"}>
-                          {column.format && typeof value === "number" ? (
-                            column.format(value)
-                          ) : column.id === "avatar" ? (
-                            <Avatar
-                              alt='Avatar'
-                              src={value}
-                              style={{ width: "50px", height: "50px" }}
+                  {columns.map((column) => {
+                    const value = user[column.id];
+                    return (
+                      <TableCell key={column.id} align={"center"}>
+                        {column.id === "avatar" ? (
+                          <Avatar
+                            alt='Avatar'
+                            src={value}
+                            style={{ width: "50px", height: "50px" }}
+                          />
+                        ) : column.id === "action" ? (
+                          <Box
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-evenly",
+                            }}>
+                            <EditCalendarOutlinedIcon
+                              color='warning'
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handleAdminUpdate(user)}
                             />
-                          ) : column.id === "action" ? (
-                            <Box
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-evenly",
-                              }}>
-                              <EditCalendarOutlinedIcon
-                                color='warning'
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleAdminUpdate(user._id)}
-                              />
 
-                              <DeleteForeverOutlinedIcon
-                                color='error'
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleAdminDelete(user._id)}
-                              />
-                            </Box>
-                          ) : (
-                            value
-                          )}
-                        </TableCell>
-                      );
-                    })}
+                            <DeleteForeverOutlinedIcon
+                              color='error'
+                              style={{ cursor: "pointer" }}
+                              onClick={() => handleAdminDelete(user._id)}
+                            />
+                          </Box>
+                        ) : (
+                          value
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               );
             })}
@@ -175,14 +175,18 @@ const UserManagementComponent = () => {
       <TablePagination
         rowsPerPageOptions={[10, 15, 20]}
         component='div'
-        count={data?.length}
+        count={data?.length || 0}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-      {isAdminUpdate && (
-        <AdimUpdateUser userId={userUpdateId} accessToken={accessToken} />
+      {isUpdate && (
+        <UpdateUserComponent
+          userId={userUpdateId}
+          accessToken={accessToken}
+          userData={userUpdate}
+        />
       )}
       {isAdminDelete && (
         <AdimDeleteUser userId={userDeleteId} accessToken={accessToken} />
@@ -190,4 +194,5 @@ const UserManagementComponent = () => {
     </Paper>
   );
 };
+
 export default UserManagementComponent;

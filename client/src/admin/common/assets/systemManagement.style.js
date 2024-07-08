@@ -14,7 +14,6 @@ export const SystemManagementLeft = styled(Box)({
   gap: "1rem",
 });
 export const SystemManagementRight = styled(Box)({
-  minHeight: "90vh",
   width: "100%",
   padding: "1rem",
   boxSizing: "border-box",
