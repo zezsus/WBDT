@@ -1,6 +1,14 @@
 /** @format */
 
-import { Avatar, Box, Button, Input, Modal, TextField } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  FormHelperText,
+  Input,
+  Modal,
+  TextField,
+} from "@mui/material";
 import {
   avata,
   Body,
@@ -29,7 +37,11 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
   const dispatch = useDispatch();
   const isUpdate = useSelector((state) => state.users.isUpdate);
 
-  const { register, handleSubmit } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues: userData,
   });
 
@@ -56,8 +68,10 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
             error.response.data.message
           ) {
             dispatch(setErrorMessage(error.response.data.message));
-            dispatch(setIsUpdate(false));
+          } else {
+            dispatch(setErrorMessage("Đã xảy ra lỗi khi cập nhật thông tin"));
           }
+          dispatch(setIsUpdate(false));
         },
       }
     );
@@ -154,12 +168,30 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
                     fullWidth
                   />
                   <TextField
+                    type='tel'
                     label='Số điện thoại'
                     variant='outlined'
                     size='small'
-                    {...register("phone")}
+                    {...register("phone", {
+                      required: true,
+                      pattern: {
+                        value: /^[0-9+]{0,12}$/,
+                        message:
+                          "Số điện thoại chỉ được nhập tối đa 12 ký tự số ",
+                      },
+                    })}
+                    inputProps={{
+                      inputMode: "tel",
+                      pattern: "[0-9+]*",
+                      maxLength: 12,
+                    }}
                     fullWidth
                   />
+                  {errors.phone && (
+                    <FormHelperText error>
+                      {errors.phone.message}
+                    </FormHelperText>
+                  )}
                   <TextField
                     label='Địa chỉ'
                     size='small'

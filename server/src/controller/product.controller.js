@@ -5,7 +5,7 @@ const CreateProduct = async (req, res) => {
   const {
     name,
     image,
-    type,
+    company,
     price,
     countInStock,
     rating,
@@ -16,7 +16,7 @@ const CreateProduct = async (req, res) => {
   if (
     !name ||
     !image ||
-    !type ||
+    !company ||
     !price ||
     !countInStock ||
     !rating ||
@@ -41,7 +41,7 @@ const CreateProduct = async (req, res) => {
     const newProduct = new Product({
       name,
       image,
-      type,
+      company,
       price,
       countInStock,
       rating,
@@ -127,53 +127,39 @@ const DeleteProduct = async (req, res) => {
 };
 
 const GetAllProduct = async (req, res) => {
-  const limit = 5;
-  let page = req.query.page;
-  const sort = req.query.sort;
-  const filter = req.query.filter;
+  const limit = 12;
+  let { page = 1, search, type, rating, price, company } = req.query;
 
   try {
-    const totalPage = await Product.countDocuments();
-    if (filter) {
-      let label = filter[0];
-      const productFilter = await Product.find({
-        [label]: { $regex: filter[1] },
-      });
-      return res.status(200).json({
-        status: true,
-        data: productFilter,
-      });
+    const query = {};
+    if (search) {
+      query.name = { $regex: search, $options: "i" }; // Tìm kiếm tương đối theo tên sản phẩm, không phân biệt hoa thường
     }
-    if (sort) {
-      let objectSort = {};
-      objectSort[sort[1]] = sort[0];
-      const productSort = await Product.find().sort(objectSort);
-      return res.status(200).json({
-        status: true,
-        data: productSort,
-      });
+    if (type) {
+      query.type = type; // Tìm kiếm theo loại sản phẩm
+    }
+    if (company) {
+      query.company = company; // Tìm kiếm theo loại sản phẩm
+    }
+    if (price) {
+      const [minPrice, maxPrice] = price.split("-").map((p) => parseInt(p, 10));
+      if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+        query.price = { $gte: minPrice, $lte: maxPrice }; // Tìm kiếm sản phẩm trong khoảng giá
+      }
     }
 
-    if (page) {
-      page = parseInt(page);
-      page < 0 ? (page = 1) : page;
-      const skip = (page - 1) * limit;
+    const totalProducts = await Product.countDocuments(query);
 
-      const productPage = await Product.find().limit(limit).skip(skip);
-      return res.status(200).json({
-        status: true,
-        data: productPage,
-        pageCurrent: page,
-        totalPage: Math.ceil(totalPage / limit),
-      });
-    }
+    page = parseInt(page, 10);
+    page = page < 1 ? 1 : page;
+    const skip = (page - 1) * limit;
 
-    const allProduct = await Product.find();
+    const productPage = await Product.find(query).limit(limit).skip(skip);
     return res.status(200).json({
       status: true,
-      data: allProduct,
-      page: page,
-      totalPage: Math.ceil(totalPage / limit),
+      data: productPage,
+      pageCurrent: page,
+      totalPage: Math.ceil(totalProducts / limit),
     });
   } catch (error) {
     return res.status(500).json({

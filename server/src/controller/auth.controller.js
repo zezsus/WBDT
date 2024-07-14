@@ -140,6 +140,13 @@ const UpdateUser = async (req, res) => {
       });
     }
 
+    if (data.phone && !/^\d{1,12}$/.test(data.phone)) {
+      return res.status(400).json({
+        status: false,
+        message: "Số điện thoại chỉ được nhập số và không quá 12 ký tự",
+      });
+    }
+
     const updateUser = await User.findByIdAndUpdate(userId, data, {
       new: true,
     });

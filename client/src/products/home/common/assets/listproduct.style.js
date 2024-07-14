@@ -36,3 +36,11 @@ export const ButtonLearnMore = styled(Button)({
   width: "100%",
   paddingTop: 20,
 });
+
+export const Paging = styled(Box)({
+  width: "100%",
+  padding: 20,
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+});

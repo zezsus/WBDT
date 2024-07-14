@@ -5,7 +5,7 @@ const productRouter = express.Router();
 const productController = require("../controller/product.controller");
 const { authMiddleware } = require("../middleware/auth.middleware");
 
-productRouter.post("/create", productController.CreateProduct);
+productRouter.post("/create", authMiddleware, productController.CreateProduct);
 productRouter.put(
   "/update-product/:id",
   authMiddleware,

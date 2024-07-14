@@ -1,6 +1,5 @@
 /** @format */
 import { useParams } from "react-router-dom";
-import { listData } from "../../home/common/mockdata";
 import { Box, Button, CardMedia, Rating, Typography } from "@mui/material";
 import {
   ListButton,
@@ -14,10 +13,7 @@ import { useDispatch } from "react-redux";
 import { setCartProduct } from "../../../common/redux/productSlice";
 
 const ProductDetailComponent = () => {
-  const { id } = useParams();
-
   const dispatch = useDispatch();
-  const product = listData.filter((item) => item.id === id);
 
   const handleAddToCart = (item) => {
     dispatch(setCartProduct(item));
@@ -25,7 +21,7 @@ const ProductDetailComponent = () => {
 
   return (
     <ProductDetail>
-      {product.map((item) => {
+      {/* {product.map((item) => {
         return (
           <ProductDetailContent key={item.key}>
             <CardMedia
@@ -71,7 +67,7 @@ const ProductDetailComponent = () => {
             </Box>
           </ProductDetailContent>
         );
-      })}
+      })} */}
     </ProductDetail>
   );
 };

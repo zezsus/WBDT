@@ -6,6 +6,7 @@ export const NavBody = styled(Box)({
   display: "flex",
   alignItems: "center",
   gap: "1rem",
+  justifyContent: "space-evenly",
 });
 
 export const NavFooter = styled(Box)({

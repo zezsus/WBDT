@@ -18,6 +18,7 @@ import { NavBody, NavFooter } from "../common/assets/navbar.style";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useGetDetailUser } from "../../common/hook/navigator.hook";
+import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 
 const NavbarComponent = () => {
   const [userId, setUserId] = useState(null);
@@ -37,6 +38,11 @@ const NavbarComponent = () => {
     }
   }, []);
   const { data } = useGetDetailUser(userId, accessToken);
+
+  const handleHome = () => {
+    navigate("/");
+    window.location.reload();
+  };
 
   const handleClickMenu = (e) => {
     setUserMenu(e.currentTarget);
@@ -69,11 +75,12 @@ const NavbarComponent = () => {
             variant='h6'
             component='div'
             sx={{ cursor: "pointer" }}
-            onClick={() => navigate("/")}>
+            onClick={handleHome}>
             ManhSangShop
           </Typography>
           <NavBody>
             <SearchElement />
+            <FilterAltOutlinedIcon />
             <CartElement />
           </NavBody>
           <NavFooter sx={{ cursor: "pointer" }}>

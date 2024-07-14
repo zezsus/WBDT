@@ -2,21 +2,20 @@
 
 import { styled, IconButton, InputBase } from "@mui/material";
 
-export const Search = styled("div")({
+export const Search = styled("form")({
   position: "relative",
   borderRadius: "8px",
-  backgroundColor: "transparent",
   marginLeft: 0,
   display: "flex",
   justifyContent: "center",
-  width: "100%",
+  width: "70%",
 });
 
 export const InputSearch = styled(InputBase)({
   border: "none",
   borderTopLeftRadius: "8px",
   borderBottomLeftRadius: "8px",
-  width: "70%",
+  width: "90%",
   maxHeight: "max-content",
   paddingLeft: "10px",
   backgroundColor: "#DDDDDD",

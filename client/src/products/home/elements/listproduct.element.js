@@ -1,69 +1,112 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
-import { getListProduct } from "../common/mockdata";
-import { Box, CardMedia, CardContent, Typography, Button } from "@mui/material";
 import {
-  ButtonLearnMore,
+  Box,
+  CardMedia,
+  CardContent,
+  Typography,
+  Pagination,
+} from "@mui/material";
+import {
   CardProduct,
   ListProducts,
+  Paging,
   styleImageProduct,
 } from "../common/assets/listproduct.style";
 import { useNavigate } from "react-router-dom";
+import { useGetAllProduct } from "../../../common/hook/product.hook";
+import SpinnerComponent from "../../../components/spinner.component";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const ListProductElement = () => {
-  const listProduct = getListProduct();
-
-  const [products, setProducts] = useState(listProduct);
-  const [visibleProducts, setVisibleProducts] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(8);
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const [products, setProducts] = useState([]);
+  const [type, setType] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [company, setCompany] = useState("");
+  const search = useSelector((state) => state.products.nameProduct);
   const navigate = useNavigate();
 
-  const handleShowMore = () => {
-    setVisibleCount((prevCount) => prevCount + 8);
-  };
+  const getProduct = useGetAllProduct(
+    page,
+    search,
+    type,
+    company,
+    `${minPrice}-${maxPrice}`
+  );
 
   useEffect(() => {
-    setVisibleProducts(products?.slice(0, visibleCount));
-  }, [products, visibleCount]);
+    if (getProduct.data?.totalPage) {
+      setTotalPage(getProduct.data?.totalPage);
+    }
+    if (getProduct.data?.data) {
+      setProducts(getProduct.data?.data);
+    }
+  }, [getProduct.data]);
+
+  const handlePageChange = (e, newPage) => {
+    setPage(newPage);
+  };
+
+  if (getProduct.isLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+        }}>
+        <SpinnerComponent />
+      </div>
+    );
+  }
+
   return (
     <Box>
-      {visibleProducts && visibleProducts.length > 0 ? (
-        <Box>
-          <ListProducts>
-            {visibleProducts.map((item) => {
-              return (
-                <CardProduct
-                  key={item.id}
-                  onClick={() => navigate(`product/${item.id}`)}>
-                  <CardMedia
-                    component='img'
-                    image={item.image}
-                    alt={item?.name}
-                    sx={styleImageProduct}
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant='h5' component='div'>
-                      {item?.title}
-                    </Typography>
-                    <Typography variant='h6'>$ {item.price}</Typography>
-                  </CardContent>
-                </CardProduct>
-              );
-            })}
-          </ListProducts>
-          {visibleCount < products?.length && (
-            <ButtonLearnMore>
-              <Button variant='contained' onClick={handleShowMore}>
-                Learn More
-              </Button>
-            </ButtonLearnMore>
-          )}
-        </Box>
+      {products?.length ? (
+        <ListProducts>
+          {products?.map((item) => {
+            return (
+              <CardProduct
+                key={item._id}
+                onClick={() => navigate(`product/${item.id}`)}>
+                <CardMedia
+                  component='img'
+                  image={item.image}
+                  alt={item?.name}
+                  sx={styleImageProduct}
+                />
+                <CardContent>
+                  <Typography gutterBottom variant='h5' component='div'>
+                    {item?.name}
+                  </Typography>
+                  <Typography variant='h6'>$ {item.price}</Typography>
+                </CardContent>
+              </CardProduct>
+            );
+          })}
+        </ListProducts>
       ) : (
         <ListProducts>
           <Typography variant='h5'>Products Not Found</Typography>
         </ListProducts>
+      )}
+      {totalPage > 1 && (
+        <Paging>
+          <Pagination
+            count={totalPage}
+            page={page}
+            onChange={handlePageChange}
+            color='primary'
+            showFirstButton
+            showLastButton
+            size='large'
+          />
+        </Paging>
       )}
     </Box>
   );
