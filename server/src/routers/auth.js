@@ -8,23 +8,24 @@ const {
   authUserMiddleWare,
 } = require("../middleware/auth.middleware");
 
-authRouter.post("/sign-in", authController.SignIn);
-authRouter.post("/sign-up", authController.SignUp);
+authRouter.post("/sign-in", authController.signIn);
+authRouter.post("/sign-up", authController.signUp);
 authRouter.put(
   "/update-user/:id",
   authUserMiddleWare,
-  authController.UpdateUser
+  authController.updateUser
 );
 authRouter.delete(
   "/delete-user/:id",
   authMiddleware,
-  authController.DeleteUser
+  authController.deleteUser
 );
-authRouter.get("/get-all-user", authMiddleware, authController.GetAllUser);
+authRouter.get("/get-all-user", authMiddleware, authController.getAllUser);
 authRouter.get(
   "/get-detail-user/:id",
   authUserMiddleWare,
-  authController.GetDetailUser
+  authController.getDetailUser
 );
+
 
 module.exports = authRouter;

@@ -5,13 +5,19 @@ import { Box, Container } from "@mui/material";
 import SliderComponent from "./slider.component";
 import ListProductElement from "../elements/listproduct.element";
 import { Product } from "../common/assets/product.style";
+import SearchFilterComponent from "../../../navigator/navbar/components/searchFilter.component";
+import { useSelector } from "react-redux";
 
 const HomeComponent = () => {
+  const isShowFilter = useSelector((state) => state.products.isShowFilter);
+  const isShowSlider = useSelector((state) => state.products.isShowSlider);
+
   return (
     <Box>
       <Product>
         <Container>
-          <SliderComponent />
+          {isShowFilter && <SearchFilterComponent />}
+          {isShowSlider && <SliderComponent />}
         </Container>
         <Container>
           <ListProductElement />

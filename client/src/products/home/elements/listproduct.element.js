@@ -23,20 +23,15 @@ const ListProductElement = () => {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [products, setProducts] = useState([]);
-  const [type, setType] = useState("");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [company, setCompany] = useState("");
+
   const search = useSelector((state) => state.products.nameProduct);
+  const type = useSelector((state) => state.products.typeProduct);
+  const brand = useSelector((state) => state.products.brandProduct);
+  const price = useSelector((state) => state.products.priceRange);
+
   const navigate = useNavigate();
 
-  const getProduct = useGetAllProduct(
-    page,
-    search,
-    type,
-    company,
-    `${minPrice}-${maxPrice}`
-  );
+  const getProduct = useGetAllProduct(page, search, type, brand, price);
 
   useEffect(() => {
     if (getProduct.data?.totalPage) {

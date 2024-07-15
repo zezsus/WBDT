@@ -18,7 +18,7 @@ const ProductSchema = new Schema(
       type: String,
       required: true,
     },
-    company: {
+    brand: {
       type: String,
       required: true,
     },

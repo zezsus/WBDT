@@ -11,6 +11,7 @@ import {
   Tooltip,
   Menu,
   MenuItem,
+  IconButton,
 } from "@mui/material";
 import SearchElement from "../elements/search.element";
 import CartElement from "../elements/cart.element";
@@ -19,13 +20,17 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useGetDetailUser } from "../../common/hook/navigator.hook";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
+import { useDispatch, useSelector } from "react-redux";
+import { setShowFilter } from "../../../common/redux/productSlice";
 
 const NavbarComponent = () => {
   const [userId, setUserId] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
   const [userMenu, setUserMenu] = useState(null);
   const open = Boolean(userMenu);
+  const isShowFilter = useSelector((state) => state.products.isShowFilter);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const storedToken = localStorage.getItem("accessToken");
@@ -68,7 +73,7 @@ const NavbarComponent = () => {
   };
 
   return (
-    <AppBar position='static'>
+    <AppBar position='static' style={{ display: "flex" }}>
       <Container>
         <Toolbar sx={{ display: "flex", gap: "2rem" }}>
           <Typography
@@ -80,7 +85,15 @@ const NavbarComponent = () => {
           </Typography>
           <NavBody>
             <SearchElement />
-            <FilterAltOutlinedIcon />
+            <IconButton onClick={() => dispatch(setShowFilter(!isShowFilter))}>
+              <Tooltip title='Bộ lọc' arrow>
+                <FilterAltOutlinedIcon
+                  fontSize='large'
+                  sx={{ color: "#ffffff" }}
+                />
+              </Tooltip>
+            </IconButton>
+
             <CartElement />
           </NavBody>
           <NavFooter sx={{ cursor: "pointer" }}>

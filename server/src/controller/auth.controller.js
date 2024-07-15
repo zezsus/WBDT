@@ -3,7 +3,7 @@ const User = require("../modals/user.modal");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const SignUp = async (req, res) => {
+const signUp = async (req, res) => {
   try {
     const { username, email, password, comfirmPassword } = req.body;
     const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
@@ -62,7 +62,7 @@ const SignUp = async (req, res) => {
   }
 };
 
-const SignIn = async (req, res) => {
+const signIn = async (req, res) => {
   try {
     const { email, password } = req.body;
     const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
@@ -117,7 +117,7 @@ const SignIn = async (req, res) => {
   }
 };
 
-const UpdateUser = async (req, res) => {
+const updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
     const data = req.body;
@@ -164,7 +164,7 @@ const UpdateUser = async (req, res) => {
   }
 };
 
-const DeleteUser = async (req, res) => {
+const deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
 
@@ -201,7 +201,7 @@ const DeleteUser = async (req, res) => {
   }
 };
 
-const GetAllUser = async (req, res) => {
+const getAllUser = async (req, res) => {
   try {
     const allUser = await User.find();
     return res.status(200).json({
@@ -216,7 +216,7 @@ const GetAllUser = async (req, res) => {
   }
 };
 
-const GetDetailUser = async (req, res) => {
+const getDetailUser = async (req, res) => {
   try {
     const userId = req.params.id;
 
@@ -244,7 +244,7 @@ const GetDetailUser = async (req, res) => {
   }
 };
 
-const LogOut = async (req, res) => {
+const logOut = async (req, res) => {
   try {
     return res.status(200).json({
       status: true,
@@ -259,11 +259,11 @@ const LogOut = async (req, res) => {
 };
 
 module.exports = {
-  SignUp,
-  SignIn,
-  UpdateUser,
-  DeleteUser,
-  GetAllUser,
-  GetDetailUser,
-  LogOut,
+  signUp,
+  signIn,
+  updateUser,
+  deleteUser,
+  getAllUser,
+  getDetailUser,
+  logOut,
 };

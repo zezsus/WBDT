@@ -1,11 +1,12 @@
 /** @format */
 const Product = require("../modals/product.modal");
 
-const CreateProduct = async (req, res) => {
+const createProduct = async (req, res) => {
   const {
     name,
     image,
-    company,
+    type,
+    brand,
     price,
     countInStock,
     rating,
@@ -16,7 +17,8 @@ const CreateProduct = async (req, res) => {
   if (
     !name ||
     !image ||
-    !company ||
+    !type ||
+    !brand ||
     !price ||
     !countInStock ||
     !rating ||
@@ -41,7 +43,8 @@ const CreateProduct = async (req, res) => {
     const newProduct = new Product({
       name,
       image,
-      company,
+      type,
+      brand,
       price,
       countInStock,
       rating,
@@ -60,7 +63,7 @@ const CreateProduct = async (req, res) => {
   }
 };
 
-const UpdateProduct = async (req, res) => {
+const updateProduct = async (req, res) => {
   const productId = req.params.id;
   const data = req.body;
 
@@ -96,7 +99,7 @@ const UpdateProduct = async (req, res) => {
   }
 };
 
-const DeleteProduct = async (req, res) => {
+const deleteProduct = async (req, res) => {
   const productId = req.params.id;
   if (!productId) {
     return res.status(400).json({
@@ -126,9 +129,9 @@ const DeleteProduct = async (req, res) => {
   }
 };
 
-const GetAllProduct = async (req, res) => {
+const getAllProduct = async (req, res) => {
   const limit = 12;
-  let { page = 1, search, type, rating, price, company } = req.query;
+  let { page = 1, search, type, brand, price } = req.query;
 
   try {
     const query = {};
@@ -138,8 +141,8 @@ const GetAllProduct = async (req, res) => {
     if (type) {
       query.type = type; // Tìm kiếm theo loại sản phẩm
     }
-    if (company) {
-      query.company = company; // Tìm kiếm theo loại sản phẩm
+    if (brand) {
+      query.brand = brand; // Tìm kiếm theo loại sản phẩm
     }
     if (price) {
       const [minPrice, maxPrice] = price.split("-").map((p) => parseInt(p, 10));
@@ -154,7 +157,11 @@ const GetAllProduct = async (req, res) => {
     page = page < 1 ? 1 : page;
     const skip = (page - 1) * limit;
 
-    const productPage = await Product.find(query).limit(limit).skip(skip);
+    const productPage = await Product.find(query)
+      .limit(limit)
+      .skip(skip)
+      .sort({ createdAt: -1 })
+      .exec();
     return res.status(200).json({
       status: true,
       data: productPage,
@@ -169,7 +176,7 @@ const GetAllProduct = async (req, res) => {
   }
 };
 
-const GetDettailProduct = async (req, res) => {
+const getDettailProduct = async (req, res) => {
   const productId = req.params.id;
   if (!productId) {
     res.status(400).json({
@@ -198,10 +205,44 @@ const GetDettailProduct = async (req, res) => {
   }
 };
 
+const getTypeProduct = async (req, res) => {
+  try {
+    const typeProduct = await Product.distinct("type");
+    typeProduct.sort();
+    return res.status(200).json({
+      status: true,
+      data: typeProduct.sort(),
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: "Lỗi server",
+    });
+  }
+};
+
+const getBrandProduct = async (req, res) => {
+  try {
+    const brandProduct = await Product.distinct("brand");
+    brandProduct.sort();
+    return res.status(200).json({
+      status: true,
+      data: brandProduct.sort(),
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: "Lỗi server",
+    });
+  }
+};
+
 module.exports = {
-  CreateProduct,
-  UpdateProduct,
-  DeleteProduct,
-  GetAllProduct,
-  GetDettailProduct,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  getAllProduct,
+  getDettailProduct,
+  getTypeProduct,
+  getBrandProduct,
 };

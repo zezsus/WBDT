@@ -6,14 +6,19 @@ const initialState = {
   nameProduct: "",
   typeProduct: "",
   priceRange: "",
-  companyProduct: "",
+  brandProduct: "",
   cartProduct: {},
+  isShowFilter: false,
+  isShowSlider: true,
 };
 
 export const productSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
+    setShowSlider: (state, action) => {
+      state.isShowSlider = action.payload;
+    },
     setNameProduct: (state, action) => {
       state.nameProduct = action.payload;
     },
@@ -23,8 +28,11 @@ export const productSlice = createSlice({
     setPriceRange: (state, action) => {
       state.priceRange = action.payload;
     },
-    setCompanyProduct: (state, action) => {
-      state.companyProduct = action.payload;
+    setBrandProduct: (state, action) => {
+      state.brandProduct = action.payload;
+    },
+    setShowFilter: (state, action) => {
+      state.isShowFilter = action.payload;
     },
     setCartProduct: (state, action) => {
       state.cartProduct = action.payload;
@@ -33,10 +41,12 @@ export const productSlice = createSlice({
 });
 
 export const {
+  setShowSlider,
   setNameProduct,
   setTypeProduct,
   setPriceRange,
-  setCompanyProduct,
+  setBrandProduct,
+  setShowFilter,
   setCartProduct,
 } = productSlice.actions;
 

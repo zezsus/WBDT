@@ -9,13 +9,17 @@ import {
 } from "../common/assets/search.style";
 import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch } from "react-redux";
-import { setNameProduct } from "../../../common/redux/productSlice";
+import {
+  setNameProduct,
+  setShowSlider,
+} from "../../../common/redux/productSlice";
 
 const SearchElement = () => {
   const { register, handleSubmit } = useForm();
   const dispatch = useDispatch();
   const handleSearch = (data) => {
     dispatch(setNameProduct(data.search));
+    dispatch(setShowSlider(false));
   };
   return (
     <Search onSubmit={handleSubmit(handleSearch)}>
