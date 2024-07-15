@@ -7,7 +7,6 @@ const initialState = {
   typeProduct: "",
   priceRange: "",
   brandProduct: "",
-  cartProduct: {},
   isShowFilter: false,
   isShowSlider: true,
 };
@@ -34,9 +33,6 @@ export const productSlice = createSlice({
     setShowFilter: (state, action) => {
       state.isShowFilter = action.payload;
     },
-    setCartProduct: (state, action) => {
-      state.cartProduct = action.payload;
-    },
   },
 });
 
@@ -47,7 +43,6 @@ export const {
   setPriceRange,
   setBrandProduct,
   setShowFilter,
-  setCartProduct,
 } = productSlice.actions;
 
 export default productSlice.reducer;

@@ -2,8 +2,9 @@
 
 import {
   getAllProduct,
-  getBrandProcut,
-  getTypeProcut,
+  getBrandProduct,
+  getDetailProduct,
+  getTypeProduct,
 } from "../services/product.service";
 import { useQuery } from "@tanstack/react-query";
 
@@ -17,13 +18,20 @@ export const useGetAllProduct = (page, search, type, brand, price) => {
 export const useGetTypeProduct = () => {
   return useQuery({
     queryKey: ["typeProduct"],
-    queryFn: getTypeProcut,
+    queryFn: getTypeProduct,
   });
 };
 
 export const useGetBrandProduct = () => {
   return useQuery({
     queryKey: ["brandProduct"],
-    queryFn: getBrandProcut,
+    queryFn: getBrandProduct,
+  });
+};
+
+export const useGetDetailProduct = (idProduct) => {
+  return useQuery({
+    queryKey: ["detailProduct", idProduct],
+    queryFn: () => getDetailProduct(idProduct),
   });
 };

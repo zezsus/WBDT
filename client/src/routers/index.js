@@ -17,7 +17,7 @@ export const routers = [
   },
 
   {
-    path: "/product/:id",
+    path: "/product-detail/:id",
     page: ProductDetailComponent,
     isShowHeader: true,
   },

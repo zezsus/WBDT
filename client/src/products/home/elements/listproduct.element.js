@@ -46,6 +46,10 @@ const ListProductElement = () => {
     setPage(newPage);
   };
 
+  const handleDetailProduct = (idProduct) => {
+    navigate(`product-detail/${idProduct}`);
+  };
+
   if (getProduct.isLoading) {
     return (
       <div
@@ -68,7 +72,7 @@ const ListProductElement = () => {
             return (
               <CardProduct
                 key={item._id}
-                onClick={() => navigate(`product/${item.id}`)}>
+                onClick={() => handleDetailProduct(item._id)}>
                 <CardMedia
                   component='img'
                   image={item.image}

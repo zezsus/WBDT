@@ -2,8 +2,9 @@
 
 import { Box, Container, styled } from "@mui/material";
 
-export const ProductDetail = styled(Container)({
+export const ProductDetail = styled(Box)({
   display: "flex",
+  flexDirection: "column",
   gap: "1rem",
   maxHeight: "88vh",
   overflowX: "hidden",
@@ -32,7 +33,7 @@ export const ProductDetailContent = styled(Box)({
 });
 
 export const styleImage = {
-  minHeight: 500,
+  minHeight: 250,
   width: "auto",
   borderRadius: "50px",
   padding: "2rem",
@@ -50,7 +51,7 @@ export const ProductDescription = styled(Box)({
 export const ListButton = styled(Box)({
   display: "flex",
   justifyContent: "space-evenly",
-  gap:'1rem',
+  gap: "1rem",
   padding: "2rem",
   boxSizing: "border-box",
 });
