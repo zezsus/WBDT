@@ -9,6 +9,9 @@ const initialState = {
   brandProduct: "",
   isShowFilter: false,
   isShowSlider: true,
+  isShowCreate: false,
+  isShowUpdate: false,
+  isShowDelete: false,
 };
 
 export const productSlice = createSlice({
@@ -33,6 +36,15 @@ export const productSlice = createSlice({
     setShowFilter: (state, action) => {
       state.isShowFilter = action.payload;
     },
+    setShowCreate: (state, action) => {
+      state.isShowCreate = action.payload;
+    },
+    setShowUpdate: (state, action) => {
+      state.isShowUpdate = action.payload;
+    },
+    setShowDelete: (state, action) => {
+      state.isShowDelete = action.payload;
+    },
   },
 });
 
@@ -43,6 +55,9 @@ export const {
   setPriceRange,
   setBrandProduct,
   setShowFilter,
+  setShowCreate,
+  setShowUpdate,
+  setShowDelete,
 } = productSlice.actions;
 
 export default productSlice.reducer;

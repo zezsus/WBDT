@@ -1,6 +1,6 @@
 /** @format */
 
-import { Box, Container, styled } from "@mui/material";
+import { Box, styled } from "@mui/material";
 
 export const ProductDetail = styled(Box)({
   display: "flex",
@@ -34,7 +34,7 @@ export const ProductDetailContent = styled(Box)({
 
 export const styleImage = {
   minHeight: 250,
-  width: "auto",
+  maxWidth: 600,
   borderRadius: "50px",
   padding: "2rem",
   boxSizing: "border-box",

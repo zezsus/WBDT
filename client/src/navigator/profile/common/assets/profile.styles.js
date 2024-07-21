@@ -8,6 +8,8 @@ export const Profile = styled(Box)({
   justifyContent: "center",
   width: "100%",
   height: "90vh",
+  flexDirection: "column",
+  gap: "2rem",
 });
 
 export const Content = styled(Box)({

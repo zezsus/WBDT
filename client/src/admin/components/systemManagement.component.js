@@ -31,7 +31,7 @@ const SystemManagementCompoent = () => {
       case "order":
         return <OrderManagementComponent />;
       default:
-        return <UserManagementComponent />;
+        return <ProductManagementComponent />;
     }
   };
   return (

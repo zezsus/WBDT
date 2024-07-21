@@ -2,17 +2,8 @@
 const Product = require("../modals/product.modal");
 
 const createProduct = async (req, res) => {
-  const {
-    name,
-    image,
-    type,
-    brand,
-    price,
-    countInStock,
-    rating,
-    description,
-    selled,
-  } = req.body;
+  const { name, image, type, brand, price, countInStock, rating, description } =
+    req.body;
 
   if (
     !name ||
@@ -22,8 +13,7 @@ const createProduct = async (req, res) => {
     !price ||
     !countInStock ||
     !rating ||
-    !description ||
-    !selled
+    !description
   ) {
     return res.status(400).json({
       status: false,
@@ -49,7 +39,6 @@ const createProduct = async (req, res) => {
       countInStock,
       rating,
       description,
-      selled,
     });
     await newProduct.save();
 
@@ -138,16 +127,33 @@ const getAllProduct = async (req, res) => {
     if (search) {
       query.name = { $regex: search, $options: "i" }; // Tìm kiếm tương đối theo tên sản phẩm, không phân biệt hoa thường
     }
+
     if (type) {
-      query.type = type; // Tìm kiếm theo loại sản phẩm
+      if (type === "All") {
+        delete query.type;
+      } else {
+        query.type = type;
+      }
     }
+
     if (brand) {
-      query.brand = brand; // Tìm kiếm theo loại sản phẩm
+      if (brand === "All") {
+        delete query.brand;
+      } else {
+        query.brand = brand;
+      }
     }
+
     if (price) {
-      const [minPrice, maxPrice] = price.split("-").map((p) => parseInt(p, 10));
-      if (!isNaN(minPrice) && !isNaN(maxPrice)) {
-        query.price = { $gte: minPrice, $lte: maxPrice }; // Tìm kiếm sản phẩm trong khoảng giá
+      if (price === "All") {
+        delete query.price;
+      } else {
+        const [minPrice, maxPrice] = price
+          .split("-")
+          .map((p) => parseInt(p, 10));
+        if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+          query.price = { $gte: minPrice, $lte: maxPrice }; // Tìm kiếm sản phẩm trong khoảng giá
+        }
       }
     }
 
@@ -208,10 +214,11 @@ const getDettailProduct = async (req, res) => {
 const getTypeProduct = async (req, res) => {
   try {
     const typeProduct = await Product.distinct("type");
-    typeProduct.sort();
+    const listType = ["All", ...typeProduct];
+    listType.sort();
     return res.status(200).json({
       status: true,
-      data: typeProduct.sort(),
+      data: listType,
     });
   } catch (error) {
     return res.status(500).json({
@@ -224,10 +231,11 @@ const getTypeProduct = async (req, res) => {
 const getBrandProduct = async (req, res) => {
   try {
     const brandProduct = await Product.distinct("brand");
-    brandProduct.sort();
+    const listBrand = ["All", ...brandProduct];
+    listBrand.sort();
     return res.status(200).json({
       status: true,
-      data: brandProduct.sort(),
+      data: listBrand,
     });
   } catch (error) {
     return res.status(500).json({

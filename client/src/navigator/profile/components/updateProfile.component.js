@@ -31,9 +31,10 @@ import { useUpdateUser } from "../../../common/hook/user.hook";
 import { useState } from "react";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { style } from "../../../admin/userManagerment/common/assets/modal.styles";
+import MessageComponent from "../../../components/message.component";
 
 const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
-  const [avatarPreview, setAvatarPreview] = useState(userData.avatar || "");
+  const [avatarPreview, setAvatarPreview] = useState(userData?.avatar || "");
   const dispatch = useDispatch();
   const isUpdate = useSelector((state) => state.users.isUpdate);
 
@@ -62,16 +63,11 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
           dispatch(setIsUpdate(false));
         },
         onError: (error) => {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.message
-          ) {
+          if (error.response.data.message) {
             dispatch(setErrorMessage(error.response.data.message));
           } else {
             dispatch(setErrorMessage("Đã xảy ra lỗi khi cập nhật thông tin"));
           }
-          dispatch(setIsUpdate(false));
         },
       }
     );
@@ -107,21 +103,6 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
     );
   }
 
-  if (updateUser.error) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100%",
-          color: "red",
-        }}>
-        Lỗi: {updateUser.error.message}
-      </div>
-    );
-  }
-
   return (
     <Modal
       open={isUpdate}
@@ -133,6 +114,7 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
           {userData && (
             <Content>
               <Header>Cập nhật thông tin</Header>
+              <MessageComponent />
               <Body>
                 <UserAvatar>
                   <Avatar alt='Avatar' src={avatarPreview} style={avata} />
@@ -172,17 +154,8 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
                     label='Số điện thoại'
                     variant='outlined'
                     size='small'
-                    {...register("phone", {
-                      required: true,
-                      pattern: {
-                        value: /^[0-9+]{0,12}$/,
-                        message:
-                          "Số điện thoại chỉ được nhập tối đa 12 ký tự số ",
-                      },
-                    })}
+                    {...register("phone")}
                     inputProps={{
-                      inputMode: "tel",
-                      pattern: "[0-9+]*",
                       maxLength: 12,
                     }}
                     fullWidth

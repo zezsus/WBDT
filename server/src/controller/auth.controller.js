@@ -147,6 +147,13 @@ const updateUser = async (req, res) => {
       });
     }
 
+    if (!data.username || !data.phone || !data.address) {
+      return res.status(400).json({
+        status: false,
+        message: "Vui lòng điền đầy đủ thông tin vào các trường bắt buộc",
+      });
+    }
+
     const updateUser = await User.findByIdAndUpdate(userId, data, {
       new: true,
     });

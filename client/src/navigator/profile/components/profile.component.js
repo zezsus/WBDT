@@ -74,9 +74,9 @@ const ProfileComponent = () => {
 
   return (
     <Box>
-      <MessageComponent />
       {!isUpdate ? (
         <Profile>
+          <MessageComponent />
           {data && (
             <Content>
               <Header>Thông tin cá nhân</Header>

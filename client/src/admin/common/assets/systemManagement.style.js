@@ -6,7 +6,7 @@ export const SystemManagement = styled(Box)({
   display: "flex",
 });
 export const SystemManagementLeft = styled(Box)({
-  width: "300px",
+  minWidth: "200px",
   minHeight: "90vh",
   boxShadow: "1px 1px 10px 1px",
   display: "flex",
@@ -14,7 +14,7 @@ export const SystemManagementLeft = styled(Box)({
   gap: "1rem",
 });
 export const SystemManagementRight = styled(Box)({
-  width: "100%",
+  width: "calc(100% - 200px)",
   padding: "1rem",
   boxSizing: "border-box",
 });

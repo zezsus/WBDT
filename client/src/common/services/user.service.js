@@ -15,5 +15,3 @@ export const updateUser = async (id, data, accessToken) => {
     throw error;
   }
 };
-
-

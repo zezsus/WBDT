@@ -2,7 +2,7 @@
 
 import { Box, styled } from "@mui/material";
 
-export const Profile = styled("form")({
+export const Products = styled("form")({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -44,26 +44,6 @@ export const Body = styled(Box)({
   paddingRight: 20,
 });
 
-export const UserAvatar = styled(Box)({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  gap: 20
-});
-
-export const avata = {
-  width: 150,
-  height: 150,
-};
-
-export const UserInfo = styled(Box)({
-  display: "flex",
-  flexDirection: "column",
-  gap: "1rem",
-  width: "100%",
-});
-
 export const Footer = styled(Box)({
   display: "flex",
   alignItems: "center",
@@ -71,4 +51,23 @@ export const Footer = styled(Box)({
   padding: 10,
 });
 
+export const ProductInfo = styled(Box)({
+  display: "flex",
+  flexDirection: "column",
+  gap: "1rem",
+  width: "100%",
+});
 
+export const ImageProduct = styled(Box)({
+  display: "flex",
+  flexDirection: "column",
+  width: 250,
+  justifyContent: "center",
+  alignItems: "center",
+  gap: 20,
+});
+
+export const productImage = {
+  widtd: 150,
+  minHeight: 100,
+};

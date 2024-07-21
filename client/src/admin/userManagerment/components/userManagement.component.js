@@ -11,6 +11,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import SpinnerComponent from "../../../components/spinner.component";
@@ -34,11 +35,7 @@ const UserManagementComponent = () => {
   const columns = [
     { id: "username", label: "Họ Tên", minWidth: 100 },
     { id: "email", label: "Email", minWidth: 100 },
-    {
-      id: "phone",
-      label: "Số Điện Thoại",
-      minWidth: 80,
-    },
+    { id: "phone", label: "Số Điện Thoại", minWidth: 80 },
     {
       id: "address",
       label: "Địa Chỉ",
@@ -111,87 +108,94 @@ const UserManagementComponent = () => {
   );
 
   return (
-    <Paper
-      sx={{ width: "100%", overflow: "hidden", boxShadow: "1px 1px 10px" }}>
-      <MessageComponent />
-      <TableContainer sx={{ maxHeight: 450 }}>
-        <Table stickyHeader aria-label='sticky table'>
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.id}
-                  align={"center"}
-                  style={{ minWidth: column.minWidth }}>
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedData?.map((user) => {
-              return (
-                <TableRow hover role='checkbox' tabIndex={-1} key={user.id}>
-                  {columns.map((column) => {
-                    const value = user[column.id];
-                    return (
-                      <TableCell key={column.id} align={"center"}>
-                        {column.id === "avatar" ? (
-                          <Avatar
-                            alt='Avatar'
-                            src={value}
-                            style={{ width: "50px", height: "50px" }}
-                          />
-                        ) : column.id === "action" ? (
-                          <Box
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-evenly",
-                            }}>
-                            <EditCalendarOutlinedIcon
-                              color='warning'
-                              style={{ cursor: "pointer" }}
-                              onClick={() => handleAdminUpdate(user)}
+    <Box>
+      <Box sx={{ p: "10px" }}>
+        <MessageComponent />
+      </Box>
+      <Paper
+        sx={{ width: "100%", overflow: "hidden", boxShadow: "1px 1px 10px" }}>
+        <TableContainer sx={{ maxHeight: 450 }}>
+          <Table stickyHeader aria-label='sticky table'>
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={"center"}
+                    style={{ minWidth: column.minWidth }}>
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedData?.map((user) => {
+                return (
+                  <TableRow hover role='checkbox' tabIndex={-1} key={user._id}>
+                    {columns.map((column) => {
+                      const value = user[column.id];
+                      return (
+                        <TableCell key={column.id} align={"center"}>
+                          {column.id === "avatar" ? (
+                            <Avatar
+                              alt='Avatar'
+                              src={value}
+                              style={{ width: "50px", height: "50px" }}
                             />
-
-                            <DeleteForeverOutlinedIcon
-                              color='error'
-                              style={{ cursor: "pointer" }}
-                              onClick={() => handleAdminDelete(user._id)}
-                            />
-                          </Box>
-                        ) : (
-                          value
-                        )}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 15, 20]}
-        component='div'
-        count={data?.length || 0}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-      {isUpdate && (
-        <UpdateUserComponent
-          userId={userUpdateId}
-          accessToken={accessToken}
-          userData={userUpdate}
+                          ) : column.id === "action" ? (
+                            <Box
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-evenly",
+                              }}>
+                              <Tooltip title='Sửa thông tin người dùng' arrow>
+                                <EditCalendarOutlinedIcon
+                                  color='warning'
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => handleAdminUpdate(user)}
+                                />
+                              </Tooltip>
+                              <Tooltip title='Xóa thông tin người dùng' arrow>
+                                <DeleteForeverOutlinedIcon
+                                  color='error'
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => handleAdminDelete(user._id)}
+                                />
+                              </Tooltip>
+                            </Box>
+                          ) : (
+                            value
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 15, 20]}
+          component='div'
+          count={data?.length || 0}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
         />
-      )}
-      {isAdminDelete && (
-        <AdimDeleteUser userId={userDeleteId} accessToken={accessToken} />
-      )}
-    </Paper>
+        {isUpdate && (
+          <UpdateUserComponent
+            userId={userUpdateId}
+            accessToken={accessToken}
+            userData={userUpdate}
+          />
+        )}
+        {isAdminDelete && (
+          <AdimDeleteUser userId={userDeleteId} accessToken={accessToken} />
+        )}
+      </Paper>
+    </Box>
   );
 };
 

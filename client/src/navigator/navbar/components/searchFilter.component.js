@@ -14,11 +14,13 @@ import {
   setShowSlider,
   setTypeProduct,
 } from "../../../common/redux/productSlice";
+import { useEffect } from "react";
 
 const SearchFilterComponent = () => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, setValue } = useForm();
   const dispatch = useDispatch();
   const price = [
+    { lable: "All", value: "All" },
     {
       lable: "Dưới 2 triệu",
       value: "0-2000000",
@@ -55,6 +57,15 @@ const SearchFilterComponent = () => {
   const typeProduct = useGetTypeProduct();
   const brandProduct = useGetBrandProduct();
 
+  useEffect(() => {
+    if (typeProduct.data) {
+      setValue("type", typeProduct.data?.[0]);
+    }
+    if (brandProduct.data) {
+      setValue("brand", brandProduct.data?.[0]);
+    }
+  }, [typeProduct, brandProduct, setValue]);
+
   return (
     <SearchFilter
       sx={{ display: "flex" }}
@@ -64,6 +75,7 @@ const SearchFilterComponent = () => {
         select
         label='Hệ điều hành'
         sx={{ minWidth: 200 }}
+        defaultValue={typeProduct.data?.[0]}
         {...register("type")}>
         {typeProduct.data?.map((type) => (
           <MenuItem key={type} value={type}>
@@ -77,6 +89,7 @@ const SearchFilterComponent = () => {
         select
         label='Hãng sản xuất'
         sx={{ minWidth: 200 }}
+        defaultValue={brandProduct.data?.[0]}
         {...register("brand")}>
         {brandProduct.data?.map((brand) => (
           <MenuItem key={brand} value={brand}>
