@@ -50,6 +50,10 @@ const ListProductElement = () => {
     navigate(`product-detail/${idProduct}`);
   };
 
+  const formatPrice = (price) => {
+    return price?.toLocaleString("vi-VN") + " VNĐ";
+  };
+
   if (getProduct.isLoading) {
     return (
       <div
@@ -73,17 +77,36 @@ const ListProductElement = () => {
               <CardProduct
                 key={item._id}
                 onClick={() => handleDetailProduct(item._id)}>
-                <CardMedia
-                  component='img'
-                  image={item.image}
-                  alt={item?.name}
-                  sx={styleImageProduct}
-                />
+                <Box
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "200px",
+                  }}>
+                  <CardMedia
+                    component='img'
+                    image={item.image}
+                    alt={item?.name}
+                    sx={styleImageProduct}
+                    className='productImage'
+                  />
+                </Box>
                 <CardContent>
-                  <Typography gutterBottom variant='h5' component='div'>
+                  <Typography
+                    gutterBottom
+                    component='div'
+                    style={{ fontSize: "18px" }}>
                     {item?.name}
                   </Typography>
-                  <Typography variant='h6'>$ {item.price}</Typography>
+                  <Typography
+                    style={{
+                      color: "red",
+                      fontSize: "22px",
+                      marginTop: "auto",
+                    }}>
+                    {formatPrice(item?.price)}
+                  </Typography>
                 </CardContent>
               </CardProduct>
             );
@@ -91,7 +114,9 @@ const ListProductElement = () => {
         </ListProducts>
       ) : (
         <ListProducts>
-          <Typography variant='h5'>Products Not Found</Typography>
+          <Typography variant='h5' style={{ textTransform: "capitalize" }}>
+            Không có sản phẩm nào
+          </Typography>
         </ListProducts>
       )}
       {totalPage > 1 && (

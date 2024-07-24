@@ -15,13 +15,21 @@ import {
 } from "@mui/material";
 import SearchElement from "../elements/search.element";
 import CartElement from "../elements/cart.element";
-import { NavBody, NavFooter } from "../common/assets/navbar.style";
+import {
+  ButtonSignin,
+  NavBody,
+  NavFooter,
+} from "../common/assets/navbar.style";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useGetDetailUser } from "../../common/hook/navigator.hook";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { useDispatch, useSelector } from "react-redux";
-import { setShowFilter } from "../../../common/redux/productSlice";
+import {
+  setIsSearchValue,
+  setShowFilter,
+  setShowSlider,
+} from "../../../common/redux/productSlice";
 
 const NavbarComponent = () => {
   const [userId, setUserId] = useState(null);
@@ -46,7 +54,9 @@ const NavbarComponent = () => {
 
   const handleHome = () => {
     navigate("/");
-    window.location.reload();
+    dispatch(setShowSlider(true));
+    dispatch(setIsSearchValue(false));
+    dispatch(setShowFilter(false));
   };
 
   const handleClickMenu = (e) => {
@@ -63,13 +73,24 @@ const NavbarComponent = () => {
     handleCloseMenu();
   };
 
+  const handleClickOrder = () => {
+    navigate("/all-order-detail");
+    handleCloseMenu();
+  };
+
   const handleCloseMenu = () => {
     setUserMenu(null);
   };
 
+  const handleSignin = () => {
+    navigate("/sign-in");
+  };
+
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/sign-in");
+    handleCloseMenu();
+    setAccessToken(null);
+    navigate("/");
   };
 
   return (
@@ -83,6 +104,7 @@ const NavbarComponent = () => {
             onClick={handleHome}>
             ManhSangShop
           </Typography>
+
           <NavBody>
             <SearchElement />
             <IconButton onClick={() => dispatch(setShowFilter(!isShowFilter))}>
@@ -93,56 +115,64 @@ const NavbarComponent = () => {
                 />
               </Tooltip>
             </IconButton>
-
             <CartElement />
           </NavBody>
+
           <NavFooter sx={{ cursor: "pointer" }}>
-            <Tooltip title='Thông tin cá nhân' arrow>
-              <Avatar
-                alt='avata'
-                src={data?.avatar}
-                onClick={() => navigate("/profile")}
-              />
-            </Tooltip>
-            <Box>
-              <Typography onClick={handleClickMenu}>
-                {data?.username}
-              </Typography>
-              {data?.isAdmin ? (
-                <Menu
-                  id='basic-menu'
-                  anchorEl={userMenu}
-                  open={open}
-                  onClose={handleCloseMenu}
-                  MenuListProps={{
-                    "aria-labelledby": "basic-button",
-                  }}>
-                  <MenuItem onClick={handleClickInfoUser}>
-                    Thông tin cá nhân
-                  </MenuItem>
-                  <MenuItem onClick={handleClickSystemManager}>
-                    Quản lý hệ thống
-                  </MenuItem>
-                  <MenuItem>Đơn hàng</MenuItem>
-                  <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
-                </Menu>
-              ) : (
-                <Menu
-                  id='basic-menu'
-                  anchorEl={userMenu}
-                  open={open}
-                  onClose={handleCloseMenu}
-                  MenuListProps={{
-                    "aria-labelledby": "basic-button",
-                  }}>
-                  <MenuItem onClick={handleClickInfoUser}>
-                    Thông tin cá nhân
-                  </MenuItem>
-                  <MenuItem>Đơn hàng</MenuItem>
-                  <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
-                </Menu>
-              )}
-            </Box>
+            {accessToken ? (
+              <>
+                <Tooltip title='Thông tin cá nhân' arrow>
+                  <Avatar
+                    alt='avata'
+                    src={data?.avatar}
+                    onClick={() => navigate("/profile")}
+                  />
+                </Tooltip>
+                <Box>
+                  <Typography onClick={handleClickMenu}>
+                    {data?.username}
+                  </Typography>
+                  {data?.isAdmin ? (
+                    <Menu
+                      id='basic-menu'
+                      anchorEl={userMenu}
+                      open={open}
+                      onClose={handleCloseMenu}
+                      MenuListProps={{
+                        "aria-labelledby": "basic-button",
+                      }}>
+                      <MenuItem onClick={handleClickInfoUser}>
+                        Thông tin cá nhân
+                      </MenuItem>
+                      <MenuItem onClick={handleClickSystemManager}>
+                        Quản lý hệ thống
+                      </MenuItem>
+                      <MenuItem onClick={handleClickOrder}>Đơn hàng</MenuItem>
+                      <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
+                    </Menu>
+                  ) : (
+                    <Menu
+                      id='basic-menu'
+                      anchorEl={userMenu}
+                      open={open}
+                      onClose={handleCloseMenu}
+                      MenuListProps={{
+                        "aria-labelledby": "basic-button",
+                      }}>
+                      <MenuItem onClick={handleClickInfoUser}>
+                        Thông tin cá nhân
+                      </MenuItem>
+                      <MenuItem onClick={handleClickOrder}>Đơn hàng</MenuItem>
+                      <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
+                    </Menu>
+                  )}
+                </Box>
+              </>
+            ) : (
+              <ButtonSignin variant='contained' onClick={handleSignin}>
+                Đăng nhập
+              </ButtonSignin>
+            )}
           </NavFooter>
         </Toolbar>
       </Container>

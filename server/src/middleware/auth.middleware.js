@@ -46,7 +46,7 @@ const authUserMiddleWare = (req, res, next) => {
         });
       }
       if (user?.isAdmin || user?.userId === userId) {
-        req.user = user; // Gán user vào req để dùng sau này nếu cần
+        req.user = user;
         next();
       } else {
         return res.status(403).json({

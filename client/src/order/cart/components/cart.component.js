@@ -1,21 +1,53 @@
 /** @format */
 
-import { Container, Stack, Typography } from "@mui/material";
-import { Cart, CartContent, CartHeader } from "../common/assets/cart.style";
+import { Box, Container, Stack, Typography } from "@mui/material";
+import { CartContent, CartHeader } from "../common/assets/cart.style";
 import CartItemElm from "../elements/cartitem.element";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { useGetCart } from "../../../common/hook/cart.hook";
+import SpinnerComponent from "../../../components/spinner.component";
+import { jwtDecode } from "jwt-decode";
 
 const CartComponent = () => {
+  const [userId, setUserId] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
   const [listCartItem, setListCartItem] = useState(null);
-  const cartItem = useSelector((state) => state.products.cartProduct);
+
   useEffect(() => {
-    if (cartItem) {
-      setListCartItem(cartItem);
+    const storedToken = localStorage.getItem("accessToken");
+    if (storedToken) {
+      const decoded = jwtDecode(storedToken);
+      if (decoded?.userId) {
+        setUserId(decoded.userId);
+        setAccessToken(storedToken);
+      }
     }
-  }, [cartItem]);
+  }, []);
+
+  const getCart = useGetCart(userId);
+
+  useEffect(() => {
+    if (getCart.data) {
+      setListCartItem(getCart.data);
+    }
+  }, [getCart.data]);
+
+  if (getCart.isLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+        }}>
+        <SpinnerComponent />
+      </div>
+    );
+  }
+
   return (
-    <Cart>
+    <Box>
       <Container>
         <Stack spacing={2} p={1}>
           <CartHeader>
@@ -23,28 +55,36 @@ const CartComponent = () => {
               gutterBottom
               variant='body2'
               component='div'
-              width={200}>
-              Product
+              style={{ textAlign: "left", width: 200 }}>
+              Sản phẩm
             </Typography>
             <CartContent>
-              <Typography variant='body2' width={150}>
-                Price
+              <Typography
+                variant='body2'
+                style={{ textAlign: "left", width: 150 }}>
+                Giá
               </Typography>
-              <Typography variant='body2' width={250}>
-                Number
+              <Typography
+                variant='body2'
+                style={{ textAlign: "left", width: 250 }}>
+                Số lượng
               </Typography>
-              <Typography variant='body2' width={150}>
-                Total
+              <Typography
+                variant='body2'
+                style={{ textAlign: "left", width: 150 }}>
+                Tổng tiền
               </Typography>
             </CartContent>
-            <Typography variant='body2' sx={{ width: 150 }}>
-              Action
+            <Typography
+              variant='body2'
+              style={{ textAlign: "left", width: 150 }}>
+              Hành động
             </Typography>
           </CartHeader>
-          <CartItemElm cartItem={listCartItem} />
         </Stack>
       </Container>
-    </Cart>
+      <CartItemElm cartItem={listCartItem} accessToken={accessToken} />
+    </Box>
   );
 };
 

@@ -1,7 +1,6 @@
 /** @format */
 
 import {
-  Avatar,
   Box,
   Button,
   CardMedia,
@@ -39,12 +38,22 @@ const ProductManagementComponent = () => {
     { id: "action", label: "Hành Động", minWidth: 100 },
     { id: "image", label: "Hình Ảnh", minWidth: 150 },
     { id: "name", label: "Tên sản phẩm", minWidth: 150 },
-    { id: "price", label: "Giá Sản phẩm", minWidth: 150 },
+    {
+      id: "price",
+      label: "Giá Sản phẩm",
+      format: (value) => value.toLocaleString("vi-VN") + " VNĐ",
+      minWidth: 150,
+    },
     { id: "brand", label: "Hãng Sản Xuất", minWidth: 150 },
     { id: "type", label: "Hệ điều hành", minWidth: 150 },
     { id: "rating", label: "Đánh Giá", minWidth: 100 },
     { id: "description", label: "Chi Tiết Sản Phẩm", minWidth: 400 },
-    { id: "countInStock", label: "Số Lượng Trong Kho", minWidth: 180 },
+    {
+      id: "countInStock",
+      label: "Số Lượng Trong Kho",
+      format: (value) => value.toLocaleString("vi-VN"),
+      minWidth: 180,
+    },
   ];
 
   const [page, setPage] = useState(1);
@@ -225,6 +234,8 @@ const ProductManagementComponent = () => {
                                 />
                               </Tooltip>
                             </Box>
+                          ) : column.format && typeof value === "number" ? (
+                            column.format(value)
                           ) : (
                             value
                           )}

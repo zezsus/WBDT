@@ -1,27 +1,6 @@
 /** @format */
 
-import { Box, Card, CardContent, styled } from "@mui/material";
-
-export const Cart = styled(Box)({
-  height: "88vh",
-  overflow: "auto",
-  "&::-webkit-scrollbar": {
-    width: "8px",
-    borderRadius: "4px",
-  },
-  "&::-webkit-scrollbar-track": {
-    background: "#f1f1f1",
-    borderRadius: "4px",
-  },
-  "&::-webkit-scrollbar-thumb": {
-    background: "#888",
-    borderRadius: "4px",
-  },
-  "&::-webkit-scrollbar-thumb:hover": {
-    background: "#555",
-    borderRadius: "4px",
-  },
-});
+import { Card, CardContent, styled } from "@mui/material";
 
 export const CartHeader = styled(Card)({
   display: "flex",

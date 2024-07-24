@@ -119,7 +119,7 @@ const deleteProduct = async (req, res) => {
 };
 
 const getAllProduct = async (req, res) => {
-  const limit = 12;
+  const limit = 8;
   let { page = 1, search, type, brand, price } = req.query;
 
   try {

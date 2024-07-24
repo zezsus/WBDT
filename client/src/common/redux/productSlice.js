@@ -12,6 +12,7 @@ const initialState = {
   isShowCreate: false,
   isShowUpdate: false,
   isShowDelete: false,
+  isSearchValue: false,
 };
 
 export const productSlice = createSlice({
@@ -45,6 +46,9 @@ export const productSlice = createSlice({
     setShowDelete: (state, action) => {
       state.isShowDelete = action.payload;
     },
+    setIsSearchValue: (state, action) => {
+      state.isSearchValue = action.payload;
+    },
   },
 });
 
@@ -58,6 +62,7 @@ export const {
   setShowCreate,
   setShowUpdate,
   setShowDelete,
+  setIsSearchValue,
 } = productSlice.actions;
 
 export default productSlice.reducer;

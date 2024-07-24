@@ -236,10 +236,10 @@ const getDetailUser = async (req, res) => {
 
     const detailUser = await User.findOne({ _id: userId });
     if (!detailUser) {
-      return {
+      return res.status(400).json({
         status: false,
         message: "Người dùng không tồn tại",
-      };
+      });
     }
 
     return res.status(200).json({ status: true, data: detailUser });

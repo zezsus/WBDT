@@ -114,8 +114,9 @@ const ProfileComponent = () => {
                 <Button
                   variant='contained'
                   style={{ width: "max-content" }}
+                  color='warning'
                   onClick={handleUpdate}>
-                  Thay đổi
+                  Cập nhật
                 </Button>
               </Footer>
             </Content>

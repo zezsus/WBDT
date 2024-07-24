@@ -34,7 +34,7 @@ export const ProductDetailContent = styled(Box)({
 
 export const styleImage = {
   minHeight: 250,
-  maxWidth: 600,
+  maxWidth: 500,
   borderRadius: "50px",
   padding: "2rem",
   boxSizing: "border-box",

@@ -10,6 +10,7 @@ import {
 import { useForm } from "react-hook-form";
 import {
   setBrandProduct,
+  setIsSearchValue,
   setPriceRange,
   setShowSlider,
   setTypeProduct,
@@ -52,6 +53,7 @@ const SearchFilterComponent = () => {
     dispatch(setBrandProduct(data.brand));
     dispatch(setPriceRange(data.price));
     dispatch(setShowSlider(false));
+    dispatch(setIsSearchValue(true));
   };
 
   const typeProduct = useGetTypeProduct();
