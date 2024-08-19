@@ -24,11 +24,13 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCartId, setShowDelete } from "../../../common/redux/cartSlice";
 import DeleteCartModalComponent from "../components/delete.component";
+import { useNavigate } from "react-router-dom";
 
 const CartItemElm = ({ cartItem, accessToken }) => {
   const [carts, setCarts] = useState(null);
   const dispatch = useDispatch();
   const isShowDelete = useSelector((state) => state.carts.isShowDelete);
+  const navigate = useNavigate();
 
   useEffect(() => {
     cartItem && setCarts(cartItem);
@@ -52,6 +54,11 @@ const CartItemElm = ({ cartItem, accessToken }) => {
     setCarts(updateCart);
   };
 
+  const handleBuyNow = (item) => {
+    const buyItem = item.product;
+    navigate("/buy", { state: { buyItem } });
+  };
+
   const handleDeleteCart = (cartId) => {
     dispatch(setCartId(cartId));
     dispatch(setShowDelete(true));
@@ -67,25 +74,25 @@ const CartItemElm = ({ cartItem, accessToken }) => {
         {carts && carts.length ? (
           carts.map((item) => {
             return (
-              <CartItem key={item._id} sx={{ my: 2 }}>
+              <CartItem key={item?._id} sx={{ my: 2 }}>
                 <CartItemImage>
                   <CardMedia
                     component={"img"}
                     sx={{ height: 80, width: 80 }}
-                    image={item.product?.image}
-                    title={item.product?.name}
+                    image={item?.product?.image}
+                    title={item?.product?.name}
                   />
                   <Typography
                     gutterBottom
                     variant='body2'
                     component='div'
                     sx={{ textTransform: "capitalize" }}>
-                    {item.product?.name}
+                    {item?.product?.name}
                   </Typography>
                 </CartItemImage>
                 <CartContent>
                   <Typography variant='body2' width={150}>
-                    {formatPrice(item.product?.price)}
+                    {formatPrice(item?.product?.price)}
                   </Typography>
                   <Typography
                     variant='body1'
@@ -94,24 +101,24 @@ const CartItemElm = ({ cartItem, accessToken }) => {
                     sx={{ display: "flex", alignItems: "center" }}
                     component={"div"}>
                     <Counter>
-                      <IconButton onClick={() => handleSubQuantity(item._id)}>
+                      <IconButton onClick={() => handleSubQuantity(item?._id)}>
                         <RemoveIcon />
                       </IconButton>
-                      <CounterInput value={item.quantity} />
-                      <IconButton onClick={() => handleAddQuantity(item._id)}>
+                      <CounterInput value={item?.quantity} />
+                      <IconButton onClick={() => handleAddQuantity(item?._id)}>
                         <AddIcon />
                       </IconButton>
                     </Counter>
                   </Typography>
                   <Typography variant='body1' width={150} sx={{ color: "red" }}>
-                    {formatPrice(item.product.price * item.quantity)}
+                    {formatPrice(item?.product?.price * item?.quantity)}
                   </Typography>
                 </CartContent>
                 <CardActions sx={{ width: 150 }}>
-                  <Button>Buy now</Button>
+                  <Button onClick={() => handleBuyNow(item)}>Buy now</Button>
                   <IconButton
                     color='error'
-                    onClick={() => handleDeleteCart(item._id)}>
+                    onClick={() => handleDeleteCart(item?._id)}>
                     <DeleteForeverIcon />
                   </IconButton>
                 </CardActions>

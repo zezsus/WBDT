@@ -12,7 +12,16 @@ const createOrder = async (req, res) => {
     user,
     isPaid,
     isDelivered,
+    isReceived,
+    paymentMethod,
   } = req.body;
+
+  if (!paymentMethod) {
+    return res.status(400).json({
+      status: false,
+      message: "Vui lòng chọn phương thức thanh toán",
+    });
+  }
 
   if (
     !shippingAddress.name ||
@@ -22,7 +31,7 @@ const createOrder = async (req, res) => {
   ) {
     return res.status(400).json({
       status: false,
-      message: "Vui lòng điền đầy đủ thông tin và chọn sản phẩm",
+      message: "Vui lòng điền đầy đủ thông tin người dùng và chọn sản phẩm",
     });
   }
 
@@ -36,6 +45,8 @@ const createOrder = async (req, res) => {
       user,
       isPaid,
       isDelivered,
+      isReceived,
+      paymentMethod,
     });
     await newOrder.save();
 
@@ -142,25 +153,17 @@ const getAllOrder = async (req, res) => {
 };
 
 const updateOrder = async (req, res) => {
-  const orderId = req.params.id;
   const data = req.body;
 
-  if (!orderId) {
+  if (!data._id) {
     return res.status(400).json({
       status: false,
       message: "Vui lòng chọn đơn hàng",
     });
   }
 
-  if (!data) {
-    return res.status(400).json({
-      status: false,
-      message: "Vui lòng điền đầy đủ thông tin",
-    });
-  }
-
   try {
-    const checkOrder = await Order.findOne({ _id: orderId });
+    const checkOrder = await Order.findOne({ _id: data._id });
     if (!checkOrder) {
       return res.status(400).json({
         status: false,
@@ -168,7 +171,7 @@ const updateOrder = async (req, res) => {
       });
     }
 
-    const updateItem = await Order.findByIdAndUpdate(orderId, data, {
+    const updateItem = await Order.findByIdAndUpdate(data._id, data, {
       new: true,
     });
 

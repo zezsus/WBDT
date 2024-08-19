@@ -2,7 +2,10 @@
 
 import { jwtDecode } from "jwt-decode";
 import React, { useEffect, useState } from "react";
-import { useGetAllDetailOrder } from "../../../common/hook/order.hook";
+import {
+  useGetAllDetailOrder,
+  useUpdateOrder,
+} from "../../../common/hook/order.hook";
 import SpinnerComponent from "../../../components/spinner.component";
 import {
   Box,
@@ -41,6 +44,7 @@ const AllOrderDetailComponent = () => {
   }, []);
 
   const getAllOrderDetail = useGetAllDetailOrder({ userId, accessToken });
+  const updateOrder = useUpdateOrder();
   useEffect(() => {
     getAllOrderDetail.data?.data &&
       setAllOrderDetail(getAllOrderDetail.data?.data);
@@ -53,6 +57,19 @@ const AllOrderDetailComponent = () => {
   const handleClickCancel = (orderId) => {
     dispatch(setShowDeleteOrder(true));
     dispatch(setOrderId(orderId));
+  };
+
+  const handleClickReceive = (item) => {
+    const updateData = { ...item, isReceived: true, isPaid: true };
+
+    updateOrder.mutate(
+      { userId, updateData, accessToken },
+      {
+        onSuccess: (data) => {
+          console.log(data);
+        },
+      }
+    );
   };
 
   const handleClickDetail = (orderId) => {
@@ -84,12 +101,21 @@ const AllOrderDetailComponent = () => {
                   <Box sx={{ pb: 2 }}>
                     <Typography fontWeight={"bold"}>Trạng thái</Typography>
                     <Box display={"flex"} gap={10}>
-                      <Typography color={"orange"}>
-                        {item.isDelivered ? "Đã nhận hàng" : "Chưa nhận hàng"}
-                      </Typography>
-                      <Typography color={"orange"}>
-                        {item.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
-                      </Typography>
+                      {!item.isDelivered ? (
+                        <Typography color={"red"}>Chưa giao hàng</Typography>
+                      ) : (
+                        <Typography color={"orange"}>Đã giao hàng</Typography>
+                      )}
+                      {!item.isReceived ? (
+                        <Typography color={"red"}>Chưa nhận hàng</Typography>
+                      ) : (
+                        <Typography color={"orange"}>Đã nhận hàng</Typography>
+                      )}
+                      {!item.isPaid ? (
+                        <Typography color={"red"}>Chưa thanh toán</Typography>
+                      ) : (
+                        <Typography color={"orange"}>Đã thanh toán</Typography>
+                      )}
                     </Box>
                   </Box>
 
@@ -134,12 +160,35 @@ const AllOrderDetailComponent = () => {
                       gap: 2,
                       justifyContent: "flex-end",
                     }}>
-                    <Button
-                      variant='outlined'
-                      color='error'
-                      onClick={() => handleClickCancel(item._id)}>
-                      Hủy đơn hàng
-                    </Button>
+                    {item.isReceived ? (
+                      <Button
+                        variant='outlined'
+                        style={{
+                          borderColor: "orange",
+                          color: "orange",
+                        }}
+                        onClick={() => handleClickCancel(item._id)}>
+                        Xóa đơn hàng
+                      </Button>
+                    ) : !item.isDelivered ? (
+                      <Button
+                        variant='outlined'
+                        color='error'
+                        onClick={() => handleClickCancel(item._id)}>
+                        Hủy đơn hàng
+                      </Button>
+                    ) : (
+                      <Button
+                        variant='outlined'
+                        style={{
+                          borderColor: "orange",
+                          color: "orange",
+                        }}
+                        onClick={() => handleClickReceive(item)}>
+                        Đã nhận hàng
+                      </Button>
+                    )}
+
                     <Button
                       variant='outlined'
                       onClick={() => handleClickDetail(item._id)}>

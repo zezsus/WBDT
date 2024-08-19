@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
+
   if (authHeader) {
     const token = authHeader.split(" ")[1];
 
@@ -34,6 +35,7 @@ const authMiddleware = (req, res, next) => {
 
 const authUserMiddleWare = (req, res, next) => {
   const authHeader = req.headers.authorization;
+
   if (authHeader) {
     const token = authHeader.split(" ")[1];
     const userId = req.params.id;

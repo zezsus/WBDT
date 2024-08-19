@@ -3,10 +3,7 @@
 const express = require("express");
 const orderRouter = express.Router();
 const orderController = require("../controller/order.controller");
-const {
-  authUserMiddleWare,
-  authMiddleware,
-} = require("../middleware/auth.middleware");
+const { authUserMiddleWare } = require("../middleware/auth.middleware");
 
 orderRouter.post(
   "/create/:id",
@@ -22,7 +19,7 @@ orderRouter.get("/get-order-detail/:id", orderController.getOrderDetail);
 orderRouter.get("/get-order", orderController.getAllOrder);
 orderRouter.put(
   "/update-order/:id",
-  authMiddleware,
+  authUserMiddleWare,
   orderController.updateOrder
 );
 

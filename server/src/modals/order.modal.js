@@ -21,6 +21,7 @@ const OrderSchema = new Schema(
       address: { type: String, required: true },
       phone: { type: Number, required: true },
     },
+    paymentMethod: { type: String, required: true },
     itemsPrice: { type: Number, required: true },
     shippingPrice: { type: Number, required: false },
     totalPrice: { type: Number, required: true },
@@ -30,9 +31,8 @@ const OrderSchema = new Schema(
       required: true,
     },
     isPaid: { type: Boolean, default: false }, //Đã thanh toán chưa
-    paidAt: { type: Date }, //ngày thanh toán
     isDelivered: { type: Boolean, default: false }, //Đã giao hàng
-    deliveredAt: { type: Date }, //Ngày giao hàng
+    isReceived: { type: Boolean, default: false }, //Đã nhận hàng
   },
   {
     timestamps: true,

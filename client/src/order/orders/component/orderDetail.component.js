@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useGetDetailOrder } from "../../../common/hook/order.hook";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SpinnerComponent from "../../../components/spinner.component";
-import { Box, CardMedia, Container, Typography } from "@mui/material";
+import { Box, Button, CardMedia, Container, Typography } from "@mui/material";
 import {
   OrderDetail,
   OrderHeader,
@@ -12,8 +12,12 @@ import {
   Status,
   UserInfo,
 } from "../common/asset/orderDetail.style";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import DeleteOrder from "../element/deleteOrder";
+import {
+  setOrderId,
+  setShowDeleteOrder,
+} from "../../../common/redux/orderSlice";
 
 const OrderDetailComponent = () => {
   const [orderDetail, setOrderDetail] = useState(null);
@@ -23,6 +27,8 @@ const OrderDetailComponent = () => {
   const isShowDeleteOrder = useSelector(
     (state) => state.orders.isShowDeleteOrder
   );
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     getOrderDetail.data?.data && setOrderDetail(getOrderDetail.data?.data);
@@ -30,6 +36,15 @@ const OrderDetailComponent = () => {
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN").format(price) + " VNĐ";
+  };
+
+  const handleClickCancel = (orderId) => {
+    dispatch(setShowDeleteOrder(true));
+    dispatch(setOrderId(orderId));
+  };
+
+  const handleBack = () => {
+    navigate("/all-order-detail");
   };
 
   if (getOrderDetail.isLoading) {
@@ -76,7 +91,6 @@ const OrderDetailComponent = () => {
                   sx={{
                     textTransform: "capitalize",
                     fontWeight: "bold",
-                    mb: 1,
                   }}>
                   Trạng thái
                 </Typography>
@@ -86,6 +100,13 @@ const OrderDetailComponent = () => {
                 ) : (
                   <Typography color={"orange"}>Đã giao hàng</Typography>
                 )}
+
+                {!orderDetail.isReceived ? (
+                  <Typography color={"red"}>Chưa nhận hàng</Typography>
+                ) : (
+                  <Typography color={"orange"}>Đã nhận hàng</Typography>
+                )}
+
                 {!orderDetail.isPaid ? (
                   <Typography color={"red"}>Chưa thanh toán</Typography>
                 ) : (
@@ -134,6 +155,30 @@ const OrderDetailComponent = () => {
                 </Typography>
               </Box>
             </ProductDetail>
+            <hr style={{ border: "none", borderTop: "1px solid #C9C9C9" }} />
+            <Box display={"flex"} justifyContent={"flex-end"} gap={1}>
+              {!orderDetail.isDelivered ? (
+                <Box>
+                  <Button
+                    variant='outlined'
+                    color='error'
+                    onClick={() => handleClickCancel(orderDetail._id)}>
+                    Hủy đơn hàng
+                  </Button>
+                </Box>
+              ) : (
+                ""
+              )}
+              <Button
+                variant='outlined'
+                style={{
+                  borderColor: "gray",
+                  color: "gray",
+                }}
+                onClick={handleBack}>
+                Đóng
+              </Button>
+            </Box>
           </OrderDetail>
         </Container>
       )}

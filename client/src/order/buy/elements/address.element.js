@@ -10,7 +10,7 @@ import {
   styleButtonChangeAddress,
 } from "../common/assets/address,style";
 import { Box, Typography } from "@mui/material";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
+import PersonIcon from "@mui/icons-material/Person";
 import UpdateProfileComponent from "../../../navigator/profile/components/updateProfile.component";
 
 export const ShippingAddress = ({ userData, userId, accessToken }) => {
@@ -24,11 +24,11 @@ export const ShippingAddress = ({ userData, userId, accessToken }) => {
   return (
     <div>
       <Address py={1}>
-        <Box >
+        <Box>
           <Box sx={{ p: 1 }}>
             <Typography sx={styleAddress}>
-              <LocationOnIcon />
-              Địa chỉ nhận hàng
+              <PersonIcon />
+              Thông tin khách hàng
             </Typography>
 
             <Box

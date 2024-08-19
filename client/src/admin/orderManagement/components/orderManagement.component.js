@@ -16,16 +16,16 @@ import { useGetAllOrder } from "../../../common/hook/order.hook";
 import SpinnerComponent from "../../../components/spinner.component";
 import { useEffect, useState } from "react";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
-import EditCalendarOutlinedIcon from "@mui/icons-material/EditCalendarOutlined";
 import { useDispatch, useSelector } from "react-redux";
-import DeleteOrder from "../../../order/orders/element/deleteOrder";
 import {
   setOrderId,
   setShowDeleteOrder,
   setShowUpdateOrder,
-  setUpdateOrderItem,
+  setUpdateItem,
 } from "../../../common/redux/orderSlice";
-import UpdateOrderComponent from "./updateOrder.component";
+import DeleteOrder from "../elements/delete.element";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import UpdateOrder from "../elements/update.element";
 
 const OrderManagementComponent = () => {
   const columns = [
@@ -33,8 +33,9 @@ const OrderManagementComponent = () => {
     { id: "shippingAddress.name", label: "Người dùng", minWidth: 150 },
     { id: "shippingAddress.address", label: "Địa chỉ", minWidth: 150 },
     { id: "shippingAddress.phone", label: "Số điện thoại", minWidth: 150 },
-    { id: "isPaid", label: "Thanh toán", minWidth: 150 },
     { id: "isDelivered", label: "Giao hàng", minWidth: 150 },
+    { id: "isReceived", label: "Nhận hàng", minWidth: 150 },
+    { id: "isPaid", label: "Thanh toán", minWidth: 150 },
     { id: "orderItems.name", label: "Sản phẩm", minWidth: 150 },
     {
       id: "orderItems.quantity",
@@ -52,11 +53,9 @@ const OrderManagementComponent = () => {
 
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
+  const isShowUpdate = useSelector((state) => state.orders.isShowUpdate);
   const isShowDeleteOrder = useSelector(
     (state) => state.orders.isShowDeleteOrder
-  );
-  const isShowUpdateOrder = useSelector(
-    (state) => state.orders.isShowUpdateOrder
   );
   const dispatch = useDispatch();
 
@@ -72,9 +71,9 @@ const OrderManagementComponent = () => {
     setPage(newPage);
   };
 
-  const handleUpdateOrder = (order) => {
+  const handleUpdateOrder = (item) => {
     dispatch(setShowUpdateOrder(true));
-    dispatch(setUpdateOrderItem(order));
+    dispatch(setUpdateItem(item));
   };
 
   const handleDeleteOrder = (orderId) => {
@@ -128,29 +127,54 @@ const OrderManagementComponent = () => {
                       return (
                         <TableCell key={column.id} align={"center"}>
                           {column.id === "action" ? (
-                            <Box
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-evenly",
-                              }}>
-                              <Tooltip title='Sửa thông tin đơn hàng' arrow>
-                                <EditCalendarOutlinedIcon
-                                  color='warning'
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => handleUpdateOrder(order)}
-                                />
-                              </Tooltip>
-
-                              <Tooltip title='Xóa đơn hàng' arrow>
-                                <DeleteForeverOutlinedIcon
-                                  color='error'
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => handleDeleteOrder(order._id)}
-                                />
-                              </Tooltip>
-                            </Box>
+                            <Tooltip title='Xóa đơn hàng' arrow>
+                              <DeleteForeverOutlinedIcon
+                                color='error'
+                                style={{ cursor: "pointer" }}
+                                onClick={() => handleDeleteOrder(order._id)}
+                              />
+                            </Tooltip>
                           ) : column.format && typeof value === "number" ? (
                             column.format(value)
+                          ) : column.id === "isDelivered" ? (
+                            value === true ? (
+                              <span
+                                style={{
+                                  color: "orange",
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}>
+                                Đã giao hàng
+                                <BorderColorIcon
+                                  fontSize='small'
+                                  onClick={() => handleUpdateOrder(order)}
+                                />
+                              </span>
+                            ) : (
+                              <span
+                                style={{
+                                  color: "red",
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}>
+                                Chưa giao hàng{" "}
+                                <BorderColorIcon
+                                  style={{ color: "orange" }}
+                                  fontSize='small'
+                                  onClick={() => handleUpdateOrder(order)}
+                                />
+                              </span>
+                            )
+                          ) : column.id === "isReceived" ? (
+                            value === true ? (
+                              <span style={{ color: "orange" }}>
+                                Đã nhận hàng
+                              </span>
+                            ) : (
+                              <span style={{ color: "red" }}>
+                                Chưa nhận hàng
+                              </span>
+                            )
                           ) : column.id === "isPaid" ? (
                             value === true ? (
                               <span style={{ color: "orange" }}>
@@ -159,16 +183,6 @@ const OrderManagementComponent = () => {
                             ) : (
                               <span style={{ color: "red" }}>
                                 Chưa thanh toán
-                              </span>
-                            )
-                          ) : column.id === "isDelivered" ? (
-                            value === true ? (
-                              <span style={{ color: "orange" }}>
-                                Đã giao hàng
-                              </span>
-                            ) : (
-                              <span style={{ color: "red" }}>
-                                Chưa giao hàng
                               </span>
                             )
                           ) : (
@@ -199,7 +213,7 @@ const OrderManagementComponent = () => {
           />
         </Box>
       )}
-      {isShowUpdateOrder && <UpdateOrderComponent />}
+      {isShowUpdate && <UpdateOrder />}
       {isShowDeleteOrder && <DeleteOrder />}
     </Box>
   );

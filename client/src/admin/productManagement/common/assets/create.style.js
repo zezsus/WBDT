@@ -37,17 +37,34 @@ export const Header = styled(Box)({
 
 export const Body = styled(Box)({
   display: "flex",
-  alignItems: "center",
+  justifyContent: "center",
   gap: "2rem",
-  minHeight: "242px",
+  height: "420px",
   paddingLeft: 20,
   paddingRight: 20,
+  overflow: "auto",
+  "&::-webkit-scrollbar": {
+    width: "4px",
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-track": {
+    background: "#f1f1f1",
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    background: "#888",
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-thumb:hover": {
+    background: "#555",
+    borderRadius: "4px",
+  },
 });
 
 export const Footer = styled(Box)({
   display: "flex",
   alignItems: "center",
-  justifyContent: "space-evenly",
+  justifyContent: "space-around",
   padding: 10,
 });
 
@@ -56,6 +73,7 @@ export const ProductInfo = styled(Box)({
   flexDirection: "column",
   gap: "1rem",
   width: "100%",
+  paddingTop: 10,
 });
 
 export const ImageProduct = styled(Box)({
@@ -71,3 +89,11 @@ export const productImage = {
   widtd: 150,
   minHeight: 100,
 };
+
+export const ConfigInfo = styled(Box)({
+  display: "flex",
+  flexDirection: "column",
+  width: "60%",
+  gap: "1rem",
+  paddingTop: 10,
+});

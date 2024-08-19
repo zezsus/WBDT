@@ -8,7 +8,6 @@ export const Orders = styled("form")({
   alignItems: "center",
   justifyContent: "center",
   gap: "2rem",
-  width: "100%",
 });
 
 export const Content = styled(Box)({
@@ -17,7 +16,6 @@ export const Content = styled(Box)({
   flexDirection: "column",
   gap: "1.5rem",
   minWidth: "600px",
-  minHeight: "350px",
   boxShadow: "1px 1px 25px 0px gray",
 });
 
@@ -39,7 +37,6 @@ export const Body = styled(Box)({
   display: "flex",
   alignItems: "center",
   gap: "2rem",
-  minHeight: "242px",
   paddingLeft: 20,
   paddingRight: 20,
 });
@@ -49,11 +46,4 @@ export const Footer = styled(Box)({
   alignItems: "center",
   justifyContent: "space-evenly",
   padding: 10,
-});
-
-export const OrderInfo = styled(Box)({
-  display: "flex",
-  flexDirection: "column",
-  gap: "1rem",
-  width: "100%",
 });

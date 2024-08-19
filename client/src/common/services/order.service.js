@@ -50,18 +50,14 @@ export const getAllOrder = async (page) => {
   }
 };
 
-export const updateOrder = async (orderId, data, accessToken) => {
+export const deleteOrder = async (userId, orderId, accessToken) => {
   try {
-    const res = await axios.put(
-      `${orderRouter}/update-order/${orderId}`,
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    console.log(res);
+    const res = await axios.delete(`${orderRouter}/cancel-order/${userId}`, {
+      data: { orderId },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
     return res.data;
   } catch (error) {
@@ -69,10 +65,9 @@ export const updateOrder = async (orderId, data, accessToken) => {
   }
 };
 
-export const deleteOrder = async (userId, orderId, accessToken) => {
+export const updateOrder = async (userId, data, accessToken) => {
   try {
-    const res = await axios.delete(`${orderRouter}/cancel-order/${userId}`, {
-      data: { orderId },
+    const res = await axios.put(`${orderRouter}/update-order/${userId}`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

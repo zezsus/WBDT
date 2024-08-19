@@ -7,6 +7,7 @@ import {
   getAllOrder,
   getAllOrderDetail,
   getDetailOrder,
+  updateOrder,
 } from "../services/order.service";
 
 export const useCreateOrder = () => {
@@ -48,11 +49,11 @@ export const useGetAllOrder = (page) => {
   });
 };
 
-export const useUpdateOrder = () => {
+export const useDeleteOrder = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ orderId, updateItem, accessToken }) => {
-      return deleteOrder(orderId, updateItem, accessToken);
+    mutationFn: ({ userId, orderId, accessToken }) => {
+      return deleteOrder(userId, orderId, accessToken);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
@@ -61,11 +62,11 @@ export const useUpdateOrder = () => {
   });
 };
 
-export const useDeleteOrder = () => {
+export const useUpdateOrder = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ userId, orderId, accessToken }) => {
-      return deleteOrder(userId, orderId, accessToken);
+    mutationFn: ({ userId, updateData, accessToken }) => {
+      return updateOrder(userId, updateData, accessToken);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });

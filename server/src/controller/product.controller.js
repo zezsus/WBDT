@@ -2,8 +2,16 @@
 const Product = require("../modals/product.modal");
 
 const createProduct = async (req, res) => {
-  const { name, image, type, brand, price, countInStock, rating, description } =
-    req.body;
+  const {
+    name,
+    image,
+    type,
+    brand,
+    price,
+    countInStock,
+    description,
+    configuration,
+  } = req.body;
 
   if (
     !name ||
@@ -12,12 +20,28 @@ const createProduct = async (req, res) => {
     !brand ||
     !price ||
     !countInStock ||
-    !rating ||
     !description
   ) {
     return res.status(400).json({
       status: false,
       message: "Vui lòng điền đầy đủ thông tin",
+    });
+  }
+
+  if (
+    !configuration ||
+    !configuration.screen ||
+    !configuration.system ||
+    !configuration.rearCamera ||
+    !configuration.chip ||
+    !configuration.ram ||
+    !configuration.rom ||
+    !configuration.sim ||
+    !configuration.battery
+  ) {
+    return res.status(400).json({
+      status: false,
+      message: "Vui lòng điền đầy đủ thông tin cấu hình máy",
     });
   }
 
@@ -37,8 +61,8 @@ const createProduct = async (req, res) => {
       brand,
       price,
       countInStock,
-      rating,
       description,
+      configuration,
     });
     await newProduct.save();
 
@@ -60,6 +84,37 @@ const updateProduct = async (req, res) => {
     return res.status(400).json({
       status: false,
       message: "Vui lòng chọn sản phẩm",
+    });
+  }
+
+  if (
+    !data.name ||
+    !data.image ||
+    !data.type ||
+    !data.brand ||
+    !data.price ||
+    !data.countInStock ||
+    !data.description
+  ) {
+    return res.status(400).json({
+      status: false,
+      message: "Vui lòng điền đầy đủ thông tin",
+    });
+  }
+
+  if (
+    !data.configuration.screen ||
+    !data.configuration.frontCamera ||
+    !data.configuration.rearCamera ||
+    !data.configuration.chip ||
+    !data.configuration.ram ||
+    !data.configuration.rom ||
+    !data.configuration.sim ||
+    !data.configuration.battery
+  ) {
+    return res.status(400).json({
+      status: false,
+      message: "Vui lòng điền đầy đủ thông tin cấu hình máy",
     });
   }
   try {

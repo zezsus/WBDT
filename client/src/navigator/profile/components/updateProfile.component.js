@@ -194,7 +194,7 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
                   variant='contained'
                   style={{ width: "max-content", backgroundColor: "gray" }}
                   onClick={handleClose}>
-                  Quay Lại
+                  Đóng
                 </Button>
               </Footer>
             </Content>

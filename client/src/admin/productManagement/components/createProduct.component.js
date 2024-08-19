@@ -1,33 +1,43 @@
 /** @format */
 
-import { Box, Button, CardMedia, Input, Modal, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Modal,
+  Step,
+  StepLabel,
+  Stepper,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowCreate } from "../../../common/redux/productSlice";
 import { style } from "../common/assets/modal.style";
 import { useForm } from "react-hook-form";
 import {
-  Body,
   Content,
   Footer,
   Header,
-  ImageProduct,
-  productImage,
-  ProductInfo,
   Products,
 } from "../common/assets/create.style";
-import MessageComponent from "../../../components/message.component";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useCreateProduct } from "../common/hook";
 import {
   setErrorMessage,
   setSuccessMessage,
 } from "../../../common/redux/userSlice";
+import CloseIcon from "@mui/icons-material/Close";
+import InfomationProduct from "../elements/add/infomationProduct.elment";
+import AddConfig from "../elements/add/addConfig.element";
 
 const CreateProductComponent = () => {
+  const steps = ["Thông tin cơ bản", "Cấu hình máy"];
   const { register, handleSubmit, reset } = useForm();
   const [imageProduct, setImageProduct] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
+  const [isAddNewBrand, setIsAddNewBrand] = useState(false);
+  const [isAddNewType, setIsAddNewType] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
 
   const isShowCreate = useSelector((state) => state.products.isShowCreate);
   const dispatch = useDispatch();
@@ -41,8 +51,65 @@ const CreateProductComponent = () => {
     }
   }, []);
 
+  const getStepContent = (step) => {
+    switch (step) {
+      case 0:
+        return (
+          <InfomationProduct
+            imageProduct={imageProduct}
+            handleOnChangeProduct={handleOnChangeProduct}
+            register={register}
+            isAddNewBrand={isAddNewBrand}
+            setIsAddNewBrand={setIsAddNewBrand}
+            isAddNewType={isAddNewType}
+            setIsAddNewType={setIsAddNewType}
+          />
+        );
+      case 1:
+        return <AddConfig register={register} />;
+      default:
+        return "Unknown step";
+    }
+  };
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
   const handleCreateProduct = (data) => {
-    const newProduct = { ...data, image: imageProduct };
+    const {
+      screen,
+      system,
+      frontCamera,
+      rearCamera,
+      chip,
+      ram,
+      rom,
+      sim,
+      battery,
+      ...restData
+    } = data;
+
+    const newProduct = {
+      ...restData,
+      image: imageProduct,
+      configuration: {
+        screen: data.screen,
+        system: data.system,
+        frontCamera: data.frontCamera,
+        rearCamera: data.rearCamera,
+        chip: data.chip,
+        ram: data.ram,
+        rom: data.rom,
+        sim: data.sim,
+        battery: data.battery,
+      },
+    };
+
     createProduct.mutate(
       { accessToken, newProduct },
       {
@@ -63,6 +130,7 @@ const CreateProductComponent = () => {
       }
     );
   };
+
   const handleClose = () => {
     dispatch(setShowCreate(false));
   };
@@ -84,112 +152,56 @@ const CreateProductComponent = () => {
       <Modal
         open={isShowCreate}
         aria-labelledby='modal-modal-title'
-        aria-describedby='modal-modal-description'>
+        aria-describedby='modal-modal-description'
+        style={{ display: "block" }}>
         <Box sx={style}>
+          <IconButton
+            onClick={handleClose}
+            style={{ position: "absolute", top: 10, right: 10 }}>
+            <CloseIcon />
+          </IconButton>
+
           <Products onSubmit={handleSubmit(handleCreateProduct)}>
             <Content>
               <Header>Thêm Sản Phẩm</Header>
-              <MessageComponent />
-              <Body>
-                <ImageProduct>
-                  <CardMedia
-                    component='img'
-                    style={productImage}
-                    image={imageProduct}
-                    alt='Product Image'
-                  />
-                  <Button
-                    variant='contained'
-                    component='label'
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}>
-                    <CloudUploadIcon
-                      fontSize='large'
-                      style={{ paddingRight: 10 }}
-                    />
-                    Thay đổi
-                    <Input
-                      type='file'
-                      accept='image/*'
-                      hidden
-                      onChange={handleOnChangeProduct}
-                      style={{ display: "none" }}
-                    />
-                  </Button>
-                </ImageProduct>
-
-                <ProductInfo>
-                  <TextField
-                    label='Tên sản phẩm'
-                    variant='outlined'
-                    size='small'
-                    {...register("name")}
-                    fullWidth
-                  />
-                  <TextField
-                    label='Giá'
-                    variant='outlined'
-                    size='small'
-                    {...register("price")}
-                    fullWidth
-                  />
-                  <TextField
-                    label='Hãng sản xuất'
-                    size='small'
-                    variant='outlined'
-                    {...register("brand")}
-                    fullWidth
-                  />
-                  <TextField
-                    label='Hệ điều hành'
-                    size='small'
-                    variant='outlined'
-                    {...register("type")}
-                    fullWidth
-                  />
-                  <TextField
-                    label='Đánh giá'
-                    variant='outlined'
-                    size='small'
-                    {...register("rating")}
-                    fullWidth
-                  />
-                  <TextField
-                    label='Số lượng trong kho'
-                    variant='outlined'
-                    size='small'
-                    {...register("countInStock")}
-                    fullWidth
-                  />
-                  <TextField
-                    id='outlined-multiline-static'
-                    label='Miêu tả'
-                    size='small'
-                    variant='outlined'
-                    multiline
-                    rows={3}
-                    {...register("description")}
-                    fullWidth
-                  />
-                </ProductInfo>
-              </Body>
-              <Footer>
-                <Button
-                  type='submit'
-                  variant='contained'
-                  style={{ width: "max-content" }}>
-                  Thêm mới
-                </Button>
-                <Button
-                  variant='contained'
-                  style={{ width: "max-content", backgroundColor: "gray" }}
-                  onClick={handleClose}>
-                  Quay Lại
-                </Button>
-              </Footer>
+              <Box>
+                <Stepper activeStep={activeStep}>
+                  {steps.map((label, index) => (
+                    <Step key={index} sx={{ pb: 2 }}>
+                      <StepLabel>{label}</StepLabel>
+                    </Step>
+                  ))}
+                </Stepper>
+                <Box>
+                  {activeStep === steps.length ? (
+                    <Box>
+                      <Typography>Hoàn thành</Typography>
+                    </Box>
+                  ) : (
+                    <Box>
+                      {getStepContent(activeStep)}
+                      <Footer>
+                        <Button
+                          disabled={activeStep === 0}
+                          onClick={handleBack}>
+                          Quay lại
+                        </Button>
+                        <Button
+                          variant='contained'
+                          onClick={
+                            activeStep === steps.length - 1
+                              ? handleSubmit(handleCreateProduct)
+                              : handleNext
+                          }>
+                          {activeStep === steps.length - 1
+                            ? "Thêm mới"
+                            : "Tiếp theo"}
+                        </Button>
+                      </Footer>
+                    </Box>
+                  )}
+                </Box>
+              </Box>
             </Content>
           </Products>
         </Box>

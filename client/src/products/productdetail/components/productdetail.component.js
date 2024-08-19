@@ -1,12 +1,5 @@
 /** @format */
-import {
-  Box,
-  Button,
-  CardMedia,
-  Container,
-  Rating,
-  Typography,
-} from "@mui/material";
+import { Box, Button, CardMedia, Container, Typography } from "@mui/material";
 import { useGetDetailProduct } from "../../../common/hook/product.hook";
 import SpinnerComponent from "../../../components/spinner.component";
 import {
@@ -27,6 +20,7 @@ import {
   setSuccessMessage,
 } from "../../../common/redux/userSlice";
 import { useDispatch } from "react-redux";
+import Configuration from "../element/configuration.element";
 
 const ProductDetailComponent = () => {
   const [userId, setUserId] = useState(null);
@@ -80,7 +74,8 @@ const ProductDetailComponent = () => {
   };
 
   const handleBuyNow = () => {
-    navigate("/buy", { state: { productDetail } });
+    const buyItem = productDetail;
+    navigate("/buy", { state: { buyItem } });
   };
 
   if (getDetailProduct.isLoading) {
@@ -110,7 +105,7 @@ const ProductDetailComponent = () => {
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             <ProductDescription>
               <Typography variant='h6'>{productDetail?.name}</Typography>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              {/* <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <Rating
                   name='read-only'
                   defaultValue={productDetail?.rating}
@@ -122,7 +117,7 @@ const ProductDetailComponent = () => {
                   sx={{ color: "#BCB4B4", fontSize: 15 }}>
                   ({productDetail?.rating})ư
                 </Typography>
-              </Box>
+              </Box> */}
               <Typography style={{ color: "red", fontSize: "1.7rem" }}>
                 {formatPrice(productDetail?.price)}
               </Typography>
@@ -149,9 +144,14 @@ const ProductDetailComponent = () => {
             </ListButton>
           </Box>
         </ProductDetailContent>
-        <Typography component={"body1"}>
-          {productDetail?.description}
-        </Typography>
+        <Box display={"flex"} justifyContent={"space-between"}>
+          <Typography
+            component={"body1"}
+            style={{ maxWidth: "60%", textAlign: "justify" }}>
+            {productDetail?.description}
+          </Typography>
+          <Configuration configData={productDetail} />
+        </Box>
       </Container>
     </ProductDetail>
   );

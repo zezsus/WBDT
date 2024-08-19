@@ -1,5 +1,5 @@
 /** @format */
-const Product = require("../modals/product.modal");
+// const Product = require("../modals/product.modal");
 const Cart = require("../modals/cart.modal");
 
 const createCart = async (req, res) => {

@@ -2,15 +2,12 @@
 
 import { Box, Button, Divider, Modal, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import {
-  Footer,
-} from "../../../admin/userManagerment/common/assets/delete.styles";
+import { Footer } from "../../../admin/userManagerment/common/assets/delete.styles";
 import { style } from "../../../admin/userManagerment/common/assets/modal.styles";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowDeleteOrder } from "../../../common/redux/orderSlice";
 import { useDeleteOrder } from "../../../common/hook/order.hook";
 import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
 
 export const DeleteOrder = () => {
   const [userId, setUserId] = useState(null);
@@ -18,7 +15,6 @@ export const DeleteOrder = () => {
   const isShowDelete = useSelector((state) => state.orders.isShowDeleteOrder);
   const orderId = useSelector((state) => state.orders.orderId);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -39,7 +35,6 @@ export const DeleteOrder = () => {
       {
         onSuccess: (data) => {
           handleClose();
-          navigate("/all-order-detail");
         },
       }
     );
