@@ -15,12 +15,14 @@ import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
 import AddShoppingCartOutlinedIcon from "@mui/icons-material/AddShoppingCartOutlined";
 import { useCreateCart } from "../../../common/hook/cart.hook";
 import { jwtDecode } from "jwt-decode";
+import Configuration from "../element/configuration.element";
+import MessageComponent from "../../../components/message.component";
+import { useDispatch } from "react-redux";
 import {
   setErrorMessage,
+  setShowMessage,
   setSuccessMessage,
 } from "../../../common/redux/userSlice";
-import { useDispatch } from "react-redux";
-import Configuration from "../element/configuration.element";
 
 const ProductDetailComponent = () => {
   const [userId, setUserId] = useState(null);
@@ -28,6 +30,7 @@ const ProductDetailComponent = () => {
   const idProduct = useParams();
   const [productDetail, setProductDetail] = useState(null);
   const getDetailProduct = useGetDetailProduct(idProduct.id);
+  const [statusButton, setStatusButton] = useState(false);
   const createCart = useCreateCart();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -47,35 +50,66 @@ const ProductDetailComponent = () => {
     getDetailProduct.data && setProductDetail(getDetailProduct.data);
   }, [getDetailProduct]);
 
+  useEffect(() => {
+    if (productDetail?.countInStock === 0) {
+      setStatusButton(true);
+    }
+  }, [productDetail]);
+
   const formatPrice = (price) => {
     return price?.toLocaleString("vi-VN") + " VNĐ";
   };
 
   const handleAddToCart = () => {
     const data = {
-      product: productDetail,
       user: userId,
+      items: {
+        product: productDetail?._id,
+        quantity: 1,
+      },
     };
-    createCart.mutate(
-      { data, accessToken },
-      {
-        onSuccess: () => {
-          dispatch(setSuccessMessage("Cập nhật thông tin thành công"));
-        },
-        onError: (error) => {
-          if (error.response.data.message) {
-            dispatch(setErrorMessage(error.response.data.message));
-          } else {
-            dispatch(setErrorMessage("Đã xảy ra lỗi khi cập nhật thông tin"));
-          }
-        },
-      }
-    );
+    if (accessToken) {
+      createCart.mutate(
+        { userId, data, accessToken },
+        {
+          onSuccess: (data) => {
+            dispatch(setSuccessMessage(""));
+            dispatch(setErrorMessage(""));
+            dispatch(setSuccessMessage(data?.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setSuccessMessage(""));
+            }, 3000);
+          },
+          onError: (error) => {
+            dispatch(setSuccessMessage(""));
+            dispatch(setErrorMessage(""));
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.message
+            ) {
+              dispatch(setErrorMessage(error?.response?.data?.message));
+              dispatch(setShowMessage(true));
+              setTimeout(() => {
+                dispatch(setErrorMessage(""));
+              }, 3000);
+            }
+          },
+        }
+      );
+    } else {
+      navigate("/sign-in");
+    }
   };
 
   const handleBuyNow = () => {
     const buyItem = productDetail;
-    navigate("/buy", { state: { buyItem } });
+    if (accessToken) {
+      navigate("/buy", { state: { buyItem } });
+    } else {
+      navigate("/sign-in");
+    }
   };
 
   if (getDetailProduct.isLoading) {
@@ -95,6 +129,8 @@ const ProductDetailComponent = () => {
   return (
     <ProductDetail>
       <Container>
+        <MessageComponent />
+
         <ProductDetailContent>
           <CardMedia
             component={"img"}
@@ -105,19 +141,6 @@ const ProductDetailComponent = () => {
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             <ProductDescription>
               <Typography variant='h6'>{productDetail?.name}</Typography>
-              {/* <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Rating
-                  name='read-only'
-                  defaultValue={productDetail?.rating}
-                  precision={0.1}
-                  readOnly
-                />
-                <Typography
-                  component={"body1"}
-                  sx={{ color: "#BCB4B4", fontSize: 15 }}>
-                  ({productDetail?.rating})ư
-                </Typography>
-              </Box> */}
               <Typography style={{ color: "red", fontSize: "1.7rem" }}>
                 {formatPrice(productDetail?.price)}
               </Typography>
@@ -137,14 +160,15 @@ const ProductDetailComponent = () => {
               <Button
                 variant='contained'
                 sx={{ width: 180, height: 50, borderRadius: 2 }}
-                onClick={handleBuyNow}>
+                onClick={handleBuyNow}
+                disabled={statusButton}>
                 <LocalMallOutlinedIcon fontSize='large' sx={{ pr: 1 }} />
                 Mua ngay
               </Button>
             </ListButton>
           </Box>
         </ProductDetailContent>
-        <Box display={"flex"} justifyContent={"space-between"}>
+        <Box display={"flex"} justifyContent={"space-between"} gap={5}>
           <Typography
             component={"body1"}
             style={{ maxWidth: "60%", textAlign: "justify" }}>

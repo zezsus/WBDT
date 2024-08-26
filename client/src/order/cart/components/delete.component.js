@@ -9,22 +9,47 @@ import {
 } from "../../../admin/userManagerment/common/assets/delete.styles";
 import { setShowDelete } from "../../../common/redux/cartSlice";
 import { useDeleteCart } from "../../../common/hook/cart.hook";
-import { setSuccessMessage } from "../../../common/redux/userSlice";
+import {
+  setErrorMessage,
+  setShowMessage,
+  setSuccessMessage,
+} from "../../../common/redux/userSlice";
 
-const DeleteCartModalComponent = ({ accessToken }) => {
+const DeleteCartModalComponent = ({ userId, accessToken }) => {
   const isShowDelete = useSelector((state) => state.carts.isShowDelete);
-  const cartId = useSelector((state) => state.carts.cartId);
+  const productId = useSelector((state) => state.carts.productId);
   const dispatch = useDispatch();
 
   const deleteCart = useDeleteCart();
 
   const handleDelete = () => {
     deleteCart.mutate(
-      { cartId, accessToken },
+      { userId, productId, accessToken },
       {
         onSuccess: (data) => {
-          dispatch(setSuccessMessage(data.message));
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          dispatch(setSuccessMessage(data?.message));
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setSuccessMessage(""));
+          }, 3000);
           handleClose();
+        },
+        onError: (error) => {
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            dispatch(setErrorMessage(error?.response?.data?.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setErrorMessage(""));
+            }, 3000);
+          }
         },
       }
     );
@@ -32,6 +57,7 @@ const DeleteCartModalComponent = ({ accessToken }) => {
 
   const handleClose = () => {
     dispatch(setShowDelete(false));
+    dispatch(setErrorMessage(""));
   };
 
   return (

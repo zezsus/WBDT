@@ -4,14 +4,12 @@ import { Box, Container, Stack, Typography } from "@mui/material";
 import { CartContent, CartHeader } from "../common/assets/cart.style";
 import CartItemElm from "../elements/cartitem.element";
 import { useEffect, useState } from "react";
-import { useGetCart } from "../../../common/hook/cart.hook";
-import SpinnerComponent from "../../../components/spinner.component";
 import { jwtDecode } from "jwt-decode";
+import MessageComponent from "../../../components/message.component";
 
 const CartComponent = () => {
   const [userId, setUserId] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
-  const [listCartItem, setListCartItem] = useState(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("accessToken");
@@ -24,30 +22,9 @@ const CartComponent = () => {
     }
   }, []);
 
-  const getCart = useGetCart(userId);
-
-  useEffect(() => {
-    if (getCart.data) {
-      setListCartItem(getCart.data);
-    }
-  }, [getCart.data]);
-
-  if (getCart.isLoading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100%",
-        }}>
-        <SpinnerComponent />
-      </div>
-    );
-  }
-
   return (
     <Box>
+      <MessageComponent />
       <Container>
         <Stack spacing={2} p={1}>
           <CartHeader>
@@ -83,7 +60,7 @@ const CartComponent = () => {
           </CartHeader>
         </Stack>
       </Container>
-      <CartItemElm cartItem={listCartItem} accessToken={accessToken} />
+      <CartItemElm accessToken={accessToken} userId={userId} />
     </Box>
   );
 };

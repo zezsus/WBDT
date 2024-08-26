@@ -7,8 +7,8 @@ export const useCreateCart = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ data, accessToken }) => {
-      createCart(data, accessToken);
+    mutationFn: ({ userId, data, accessToken }) => {
+      return createCart(userId, data, accessToken);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["carts"] });
@@ -26,7 +26,8 @@ export const useGetCart = (userId) => {
 export const useDeleteCart = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ cartId, accessToken }) => deleteCart(cartId, accessToken),
+    mutationFn: ({ userId, productId, accessToken }) =>
+      deleteCart(userId, productId, accessToken),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["carts"] });
     },

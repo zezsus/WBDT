@@ -1,14 +1,6 @@
 /** @format */
 
-import {
-  Avatar,
-  Box,
-  Button,
-  FormHelperText,
-  Input,
-  Modal,
-  TextField,
-} from "@mui/material";
+import { Avatar, Box, Button, Input, Modal, TextField } from "@mui/material";
 import {
   avata,
   Body,
@@ -24,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setErrorMessage,
   setIsUpdate,
+  setShowMessage,
   setSuccessMessage,
 } from "../../../common/redux/userSlice";
 import { useForm } from "react-hook-form";
@@ -38,11 +31,7 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
   const dispatch = useDispatch();
   const isUpdate = useSelector((state) => state.users.isUpdate);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const { register, handleSubmit } = useForm({
     defaultValues: userData,
   });
 
@@ -58,15 +47,25 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
     updateUser.mutate(
       { userId, userData, accessToken },
       {
-        onSuccess: () => {
-          dispatch(setSuccessMessage("Cập nhật thông tin thành công"));
+        onSuccess: (data) => {
+          dispatch(setSuccessMessage(data?.message));
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setSuccessMessage(""));
+          }, 3000);
           dispatch(setIsUpdate(false));
         },
         onError: (error) => {
-          if (error.response.data.message) {
-            dispatch(setErrorMessage(error.response.data.message));
-          } else {
-            dispatch(setErrorMessage("Đã xảy ra lỗi khi cập nhật thông tin"));
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            dispatch(setErrorMessage(error?.response?.data?.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setErrorMessage(""));
+            }, 3000);
           }
         },
       }
@@ -87,6 +86,7 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
 
   const handleClose = () => {
     dispatch(setIsUpdate(false));
+    dispatch(setErrorMessage(""));
   };
 
   if (updateUser.isLoading) {
@@ -156,15 +156,10 @@ const UpdateProfileComponent = ({ userData, userId, accessToken }) => {
                     size='small'
                     {...register("phone")}
                     inputProps={{
-                      maxLength: 12,
+                      maxLength: 10,
                     }}
                     fullWidth
                   />
-                  {errors.phone && (
-                    <FormHelperText error>
-                      {errors.phone.message}
-                    </FormHelperText>
-                  )}
                   <TextField
                     label='Địa chỉ'
                     size='small'

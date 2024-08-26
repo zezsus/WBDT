@@ -140,10 +140,10 @@ const updateUser = async (req, res) => {
       });
     }
 
-    if (data.phone && !/^\d{1,12}$/.test(data.phone)) {
+    if (data.phone && !/^\d{1,10}$/.test(data.phone)) {
       return res.status(400).json({
         status: false,
-        message: "Số điện thoại chỉ được nhập số và không quá 12 ký tự",
+        message: "Số điện thoại chỉ được nhập số và không quá 10 ký tự",
       });
     }
 
@@ -209,11 +209,26 @@ const deleteUser = async (req, res) => {
 };
 
 const getAllUser = async (req, res) => {
+  const limit = 8;
+  let { page = 1, search, type, brand, price } = req.query;
+
   try {
-    const allUser = await User.find();
+    const query = {};
+    if (search) {
+      query.name = { $regex: search, $options: "i" };
+    }
+    const totalProducts = await User.countDocuments(query);
+    page = parseInt(page, 10);
+    page = page < 1 ? 1 : page;
+    const skip = (page - 1) * limit;
+
+    const allUser = await User.find().limit(limit).skip(skip).exec();
+
     return res.status(200).json({
       status: true,
       data: allUser,
+      pageCurrent: page,
+      totalPage: Math.ceil(totalProducts / limit),
     });
   } catch (error) {
     return res.status(500).json({

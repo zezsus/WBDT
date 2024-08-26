@@ -8,6 +8,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { setShowDeleteOrder } from "../../../common/redux/orderSlice";
 import { useDeleteOrder } from "../../../common/hook/order.hook";
 import { jwtDecode } from "jwt-decode";
+import {
+  setErrorMessage,
+  setShowMessage,
+  setSuccessMessage,
+} from "../../../common/redux/userSlice";
 
 export const DeleteOrder = () => {
   const [userId, setUserId] = useState(null);
@@ -34,7 +39,29 @@ export const DeleteOrder = () => {
       { userId, orderId, accessToken },
       {
         onSuccess: (data) => {
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          dispatch(setSuccessMessage(data?.message));
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setSuccessMessage(""));
+          }, 3000);
           handleClose();
+        },
+        onError: (error) => {
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            dispatch(setErrorMessage(error?.response?.data?.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setErrorMessage(""));
+            }, 3000);
+          }
         },
       }
     );

@@ -10,7 +10,7 @@ export const useUpdateUser = () => {
       return updateUser(userId, userData, accessToken);
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["userDetail", data._id] });
+      queryClient.invalidateQueries({ queryKey: ["userDetail"] });
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });

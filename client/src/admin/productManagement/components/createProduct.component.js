@@ -22,13 +22,15 @@ import {
   Products,
 } from "../common/assets/create.style";
 import { useCreateProduct } from "../common/hook";
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from "../../../common/redux/userSlice";
 import CloseIcon from "@mui/icons-material/Close";
 import InfomationProduct from "../elements/add/infomationProduct.elment";
 import AddConfig from "../elements/add/addConfig.element";
+import {
+  setErrorMessage,
+  setShowMessage,
+  setSuccessMessage,
+} from "../../../common/redux/userSlice";
+import MessageComponent from "../../../components/message.component";
 
 const CreateProductComponent = () => {
   const steps = ["Thông tin cơ bản", "Cấu hình máy"];
@@ -115,16 +117,28 @@ const CreateProductComponent = () => {
       {
         onSuccess: (data) => {
           dispatch(setShowCreate(false));
-          dispatch(setSuccessMessage(data.message));
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          dispatch(setSuccessMessage(data?.message));
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setSuccessMessage(""));
+          }, 3000);
           reset();
         },
-      },
-      {
         onError: (error) => {
-          if (error.response.data.message) {
-            dispatch(setErrorMessage(error.response.data.message));
-          } else {
-            dispatch(setErrorMessage("Đã xảy ra lỗi khi cập nhật thông tin"));
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            dispatch(setErrorMessage(error?.response?.data?.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setErrorMessage(""));
+            }, 3000);
           }
         },
       }
@@ -133,6 +147,7 @@ const CreateProductComponent = () => {
 
   const handleClose = () => {
     dispatch(setShowCreate(false));
+    dispatch(setErrorMessage(""));
   };
 
   const handleOnChangeProduct = (e) => {
@@ -149,6 +164,7 @@ const CreateProductComponent = () => {
 
   return (
     <Box>
+      <MessageComponent />
       <Modal
         open={isShowCreate}
         aria-labelledby='modal-modal-title'

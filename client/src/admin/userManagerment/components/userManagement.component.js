@@ -3,15 +3,16 @@
 import {
   Avatar,
   Box,
+  Pagination,
   Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import SpinnerComponent from "../../../components/spinner.component";
@@ -23,14 +24,16 @@ import AdimDeleteUser from "./deleteUser.component";
 import { useGetALlUser } from "../../common/hook/user.hook";
 import MessageComponent from "../../../components/message.component";
 import UpdateUserComponent from "../../../navigator/profile/components/updateProfile.component";
+import { jwtDecode } from "jwt-decode";
 
 const UserManagementComponent = () => {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [accessToken, setAccessToken] = useState(null);
   const [userUpdateId, setUserUpdateId] = useState(null);
   const [userDeleteId, setUserDeleteId] = useState(null);
   const [userUpdate, setUserUpdate] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(0);
+  const [userId, setUserId] = useState(null);
 
   const columns = [
     { id: "username", label: "Họ Tên", minWidth: 100 },
@@ -56,29 +59,36 @@ const UserManagementComponent = () => {
   const dispatch = useDispatch();
   const isUpdate = useSelector((state) => state.users.isUpdate);
   const isAdminDelete = useSelector((state) => state.users.isAdminDelete);
-  const successMessage = useSelector((state) => state.users.successMessage);
-  const errorMessage = useSelector((state) => state.users.errorMessage);
-
   useEffect(() => {
     const storedToken = localStorage.getItem("accessToken");
     if (storedToken) {
-      setAccessToken(storedToken);
+      const decoded = jwtDecode(storedToken);
+      if (decoded?.userId) {
+        setUserId(decoded.userId);
+        setAccessToken(storedToken);
+      }
     }
-  }, [successMessage, errorMessage, dispatch]);
+  }, []);
 
-  const { data, isLoading } = useGetALlUser(accessToken);
+  const { data, isLoading } = useGetALlUser(page, accessToken);
 
-  const handleChangePage = (event, newPage) => {
+  useEffect(() => {
+    if (data?.totalPage) {
+      setTotalPage(data?.totalPage);
+    }
+  }, [data]);
+
+  const handlePageChange = (e, newPage) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
   const handleAdminUpdate = (user) => {
-    setUserUpdate(user);
+    if (user && user.phone) {
+      setUserUpdate({ ...user, phone: "0" + user.phone });
+    } else {
+      setUserUpdate(user);
+    }
+
     dispatch(setIsUpdate(true));
     setUserUpdateId(user._id);
   };
@@ -102,16 +112,10 @@ const UserManagementComponent = () => {
     );
   }
 
-  const paginatedData = data?.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
-  );
-
   return (
     <Box>
-      <Box sx={{ p: "10px" }}>
-        <MessageComponent />
-      </Box>
+      {!isUpdate && <MessageComponent />}
+      <Box sx={{ p: "10px" }}></Box>
       <Paper
         sx={{ width: "100%", overflow: "hidden", boxShadow: "1px 1px 10px" }}>
         <TableContainer sx={{ maxHeight: 450 }}>
@@ -128,62 +132,82 @@ const UserManagementComponent = () => {
                 ))}
               </TableRow>
             </TableHead>
-            <TableBody>
-              {paginatedData?.map((user) => {
-                return (
-                  <TableRow hover role='checkbox' tabIndex={-1} key={user._id}>
-                    {columns.map((column) => {
-                      const value = user[column.id];
-                      return (
-                        <TableCell key={column.id} align={"center"}>
-                          {column.id === "avatar" ? (
-                            <Avatar
-                              alt='Avatar'
-                              src={value}
-                              style={{ width: "50px", height: "50px" }}
-                            />
-                          ) : column.id === "action" ? (
-                            <Box
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-evenly",
-                              }}>
-                              <Tooltip title='Sửa thông tin người dùng' arrow>
-                                <EditCalendarOutlinedIcon
-                                  color='warning'
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => handleAdminUpdate(user)}
+            {data?.data && data?.data?.length > 1 ? (
+              <TableBody>
+                {data?.data?.map((user) => {
+                  if (user._id !== userId) {
+                    return (
+                      <TableRow
+                        hover
+                        role='checkbox'
+                        tabIndex={-1}
+                        key={user._id}>
+                        {columns.map((column) => {
+                          const value = user[column.id];
+                          return (
+                            <TableCell key={column.id} align={"center"}>
+                              {column.id === "avatar" ? (
+                                <Avatar
+                                  alt='Avatar'
+                                  src={value}
+                                  style={{ width: "50px", height: "50px" }}
                                 />
-                              </Tooltip>
-                              <Tooltip title='Xóa thông tin người dùng' arrow>
-                                <DeleteForeverOutlinedIcon
-                                  color='error'
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => handleAdminDelete(user._id)}
-                                />
-                              </Tooltip>
-                            </Box>
-                          ) : (
-                            value
-                          )}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
+                              ) : column.id === "action" ? (
+                                <Box
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-evenly",
+                                  }}>
+                                  <Tooltip
+                                    title='Sửa thông tin người dùng'
+                                    arrow>
+                                    <EditCalendarOutlinedIcon
+                                      color='warning'
+                                      style={{ cursor: "pointer" }}
+                                      onClick={() => handleAdminUpdate(user)}
+                                    />
+                                  </Tooltip>
+                                  <Tooltip
+                                    title='Xóa thông tin người dùng'
+                                    arrow>
+                                    <DeleteForeverOutlinedIcon
+                                      color='error'
+                                      style={{ cursor: "pointer" }}
+                                      onClick={() =>
+                                        handleAdminDelete(user._id)
+                                      }
+                                    />
+                                  </Tooltip>
+                                </Box>
+                              ) : column.id === "phone" && value ? (
+                                <Typography>0{value}</Typography>
+                              ) : (
+                                value
+                              )}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    );
+                  }
+                })}
+              </TableBody>
+            ) : (
+              <TableBody>
+                <TableCell
+                  colSpan={columns.length}
+                  style={{
+                    textAlign: "center",
+                    padding: "20px",
+                    fontSize: "20px",
+                  }}>
+                  Không có người dùng nào khác
+                </TableCell>
+              </TableBody>
+            )}
           </Table>
         </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[10, 15, 20]}
-          component='div'
-          count={data?.length || 0}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+
         {isUpdate && (
           <UpdateUserComponent
             userId={userUpdateId}
@@ -195,6 +219,21 @@ const UserManagementComponent = () => {
           <AdimDeleteUser userId={userDeleteId} accessToken={accessToken} />
         )}
       </Paper>
+      {totalPage > 1 && (
+        <Box
+          style={{ display: "flex", justifyContent: "center" }}
+          sx={{ mt: 2 }}>
+          <Pagination
+            count={totalPage}
+            page={page}
+            onChange={handlePageChange}
+            color='primary'
+            showFirstButton
+            showLastButton
+            size='large'
+          />
+        </Box>
+      )}
     </Box>
   );
 };

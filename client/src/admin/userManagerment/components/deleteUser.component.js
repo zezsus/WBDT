@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setAdminDelete,
   setErrorMessage,
+  setShowMessage,
   setSuccessMessage,
 } from "../../../common/redux/userSlice";
 import { Footer, Header } from "../common/assets/delete.styles";
@@ -21,20 +22,38 @@ const AdimDeleteUser = ({ userId, accessToken }) => {
       { userId, accessToken },
       {
         onSuccess: (data) => {
-          dispatch(setSuccessMessage(data.message));
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          dispatch(setSuccessMessage(data?.message));
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setSuccessMessage(""));
+          }, 3000);
           handleClose();
         },
       },
       {
         onError: (error) => {
-          dispatch(setErrorMessage(error.message));
-          handleClose();
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            dispatch(setErrorMessage(error?.response?.data?.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setErrorMessage(""));
+            }, 3000);
+          }
         },
       }
     );
   };
   const handleClose = () => {
     dispatch(setAdminDelete(false));
+    dispatch(setErrorMessage(""));
   };
 
   return (

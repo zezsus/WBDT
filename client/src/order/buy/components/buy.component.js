@@ -26,12 +26,21 @@ import { Counter, CounterInput } from "../../cart/common/assets/cartitem.style";
 import { useCreateOrder } from "../../../common/hook/order.hook";
 import { useDispatch } from "react-redux";
 import { setOrderId } from "../../../common/redux/orderSlice";
+import { PayPalButton } from "react-paypal-button-v2";
+import { getPayment } from "../common/service/payment.service";
+import {
+  setErrorMessage,
+  setShowMessage,
+  setSuccessMessage,
+} from "../../../common/redux/userSlice";
+import MessageComponent from "../../../components/message.component";
 
 const BuyComponent = () => {
   const [userId, setUserId] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [payMethod, setPayMethod] = useState("Thanh toán khi nhận hàngcd");
+  const [payMethod, setPayMethod] = useState("Thanh toán khi nhận hàng");
+  const [sdkReady, setSdkReady] = useState(false);
   const location = useLocation();
   const buyItem = location.state?.buyItem;
   const userInfo = useGetDetailUser(userId, accessToken);
@@ -39,9 +48,11 @@ const BuyComponent = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const paymentPrice = ((buyItem?.price * quantity) / 24000).toFixed(2);
+
   useEffect(() => {
     const storeToken = localStorage.getItem("accessToken");
-    if (localStorage) {
+    if (storeToken) {
       const decode = jwtDecode(storeToken);
       if (decode) {
         setUserId(decode.userId);
@@ -50,60 +61,160 @@ const BuyComponent = () => {
     }
   }, []);
 
+  console.log("user", userInfo.data);
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN").format(price) + " VNĐ";
   };
 
   const handleAddQuantity = () => {
-    setQuantity(quantity + 1);
+    if (buyItem?.countInStock - quantity > 0) {
+      setQuantity(quantity + 1);
+    }
   };
 
   const handleSubQuantity = () => {
-    quantity > 1 ? setQuantity(quantity - 1) : setQuantity(1);
+    quantity > 1 && setQuantity(quantity - 1);
   };
 
   const handlePaymantMethod = (e) => {
     setPayMethod(e.target.value);
   };
 
-  const handleBuyNow = () => {
-    if (payMethod === "Thanh toán khi nhận hàng") {
-      const newOrder = {
-        orderItems: {
-          name: buyItem?.name,
-          quantity: quantity,
-          image: buyItem?.image,
-          price: buyItem?.price,
-          product: buyItem?._id,
-        },
-        shippingAddress: {
-          name: userInfo.data?.username,
-          address: userInfo.data?.address,
-          phone: userInfo.data?.phone,
-        },
-        itemsPrice: buyItem?.price,
-        shippingPrice: 0,
-        totalPrice: buyItem?.price * quantity + 20000,
-        paymentMethod: payMethod,
-        user: userInfo.data?._id,
-        isPaid: false,
-        isDelivered: false,
-        isReceived: false,
-      };
-
-      createOrder.mutate(
-        { newOrder, userId, accessToken },
-        {
-          onSuccess: (data) => {
-            const orderId = data.data._id;
-            navigate("/order-detail", { state: { orderId } });
-            dispatch(setOrderId(data.data._id));
-          },
-        }
-      );
-    } else {
-      console.log("Thanh toán onl");
+  const addPaypalScript = async () => {
+    const { data } = await getPayment();
+    if (!data) {
+      console.log("Không có client id");
+      return;
     }
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = `https://sandbox.paypal.com/sdk/js?client-id=${data}`;
+    script.async = true;
+    script.onload = () => {
+      setSdkReady(true);
+    };
+    document.body.appendChild(script);
+  };
+
+  useEffect(() => {
+    if (!window.paypal) {
+      addPaypalScript();
+    } else {
+      setSdkReady(true);
+    }
+  }, [setSdkReady]);
+
+  const handleSuccess = () => {
+    const newOrder = {
+      orderItems: {
+        name: buyItem?.name,
+        quantity: quantity,
+        image: buyItem?.image,
+        price: buyItem?.price,
+        product: buyItem?._id,
+      },
+      shippingAddress: {
+        name: userInfo.data?.username,
+        address: userInfo.data?.address,
+        phone: userInfo.data?.phone,
+      },
+      itemsPrice: buyItem?.price,
+      totalPrice: buyItem?.price * quantity,
+      paymentMethod: payMethod,
+      user: userInfo.data?._id,
+      isPaid: true,
+      isDelivered: false,
+      isReceived: false,
+    };
+    createOrder.mutate(
+      { newOrder, userId, accessToken },
+      {
+        onSuccess: (data) => {
+          const orderId = data.data._id;
+          navigate("/order-detail", { state: { orderId } });
+          dispatch(setOrderId(data.data._id));
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          dispatch(setSuccessMessage(data?.message));
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setSuccessMessage(""));
+          }, 3000);
+        },
+        onError: (error) => {
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            dispatch(setErrorMessage(error?.response?.data?.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setErrorMessage(""));
+            }, 3000);
+          }
+        },
+      }
+    );
+  };
+
+  const handleBuyNow = () => {
+    const newOrder = {
+      orderItems: {
+        name: buyItem?.name,
+        quantity: quantity,
+        image: buyItem?.image,
+        price: buyItem?.price,
+        product: buyItem?._id,
+      },
+      shippingAddress: {
+        name: userInfo.data?.username,
+        address: userInfo.data?.address,
+        phone: userInfo.data?.phone,
+      },
+      itemsPrice: buyItem?.price,
+      totalPrice: buyItem?.price * quantity,
+      paymentMethod: payMethod,
+      user: userInfo.data?._id,
+      isPaid: false,
+      isDelivered: false,
+      isReceived: false,
+    };
+
+    createOrder.mutate(
+      { newOrder, userId, accessToken },
+      {
+        onSuccess: (data) => {
+          const orderId = data.data._id;
+          navigate("/order-detail", { state: { orderId } });
+          dispatch(setOrderId(data.data._id));
+          dispatch(setSuccessMessage(data?.message));
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setSuccessMessage(""));
+          }, 3000);
+        },
+
+        onError: (error) => {
+          console.log(error.response.data.message);
+
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            dispatch(setErrorMessage(error?.response?.data?.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setErrorMessage(""));
+            }, 3000);
+          }
+        },
+      }
+    );
   };
 
   if (userInfo.isLoading) {
@@ -128,6 +239,7 @@ const BuyComponent = () => {
         borderRadius: "10px",
       }}
       sx={{ mt: 2 }}>
+      <MessageComponent />
       {userInfo && (
         <ShippingAddress
           userData={userInfo.data}
@@ -206,13 +318,28 @@ const BuyComponent = () => {
         </Box>
 
         <Box display={"flex"} justifyContent={"center"} sx={{ py: 2 }}>
-          <Button
-            variant='contained'
-            color='warning'
-            style={{ width: "100%", height: 50 }}
-            onClick={handleBuyNow}>
-            Đặt hàng
-          </Button>
+          {payMethod === "Thanh toán online" && sdkReady ? (
+            <Box style={{ width: "100%" }}>
+              <PayPalButton
+                style={{
+                  color: "blue",
+                }}
+                amount={paymentPrice}
+                onSuccess={handleSuccess}
+                onError={(error) => {
+                  console.log("error", error);
+                }}
+              />
+            </Box>
+          ) : (
+            <Button
+              variant='contained'
+              color='warning'
+              style={{ width: "100%", height: 50 }}
+              onClick={handleBuyNow}>
+              Đặt hàng
+            </Button>
+          )}
         </Box>
       </BuyProduct>
     </Container>

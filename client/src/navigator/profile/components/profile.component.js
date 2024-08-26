@@ -23,6 +23,7 @@ import MessageComponent from "../../../components/message.component";
 const ProfileComponent = () => {
   const [userId, setUserId] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
+  const [userUpdate, setUserUpdate] = useState(null);
   const dispatch = useDispatch();
   const isUpdate = useSelector((state) => state.users.isUpdate);
 
@@ -42,6 +43,12 @@ const ProfileComponent = () => {
   };
 
   const { data, isLoading, error } = useGetDetailUser(userId, accessToken);
+
+  useEffect(() => {
+    data && data?.phone
+      ? setUserUpdate({ ...data, phone: "0" + data?.phone })
+      : setUserUpdate(data);
+  }, [data]);
 
   if (isLoading) {
     return (
@@ -95,9 +102,10 @@ const ProfileComponent = () => {
                     <span style={{ fontWeight: "bold" }}>Họ tên: </span>
                     {data.username}
                   </Typography>
+
                   <Typography>
                     <span style={{ fontWeight: "bold" }}>Số điện thoại: </span>
-                    {data.phone}
+                    {data && data.phone && <span>{"0" + data.phone}</span>}
                   </Typography>
                   <Typography>
                     <span style={{ fontWeight: "bold" }}>Địa chỉ: </span>
@@ -124,7 +132,7 @@ const ProfileComponent = () => {
         </Profile>
       ) : (
         <UpdateUserComponent
-          userData={data}
+          userData={userUpdate}
           userId={userId}
           accessToken={accessToken}
         />

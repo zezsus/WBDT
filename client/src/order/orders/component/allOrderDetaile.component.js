@@ -23,6 +23,7 @@ import {
 } from "../../../common/redux/orderSlice";
 import DeleteOrder from "../element/deleteOrder";
 import { useNavigate } from "react-router-dom";
+import MessageComponent from "../../../components/message.component";
 
 const AllOrderDetailComponent = () => {
   const [userId, setUserId] = useState(null);
@@ -92,6 +93,7 @@ const AllOrderDetailComponent = () => {
 
   return (
     <div>
+      <MessageComponent />
       <Container sx={{ p: 2 }}>
         <Stack spacing={5}>
           {allOrderDetail && allOrderDetail.length > 0 ? (

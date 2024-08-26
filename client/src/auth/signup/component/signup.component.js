@@ -1,6 +1,6 @@
 /** @format */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import {
@@ -9,8 +9,6 @@ import {
   AuthForm,
   AuthHeader,
   Div,
-  styleError,
-  styleSuccess,
 } from "../../common/assets/auth.style";
 import {
   Box,
@@ -27,14 +25,20 @@ import {
   stylePassword,
 } from "../../common/assets/signup.style";
 import { usePostNewtUser } from "../../common/hook/auth.hook";
+import { useDispatch } from "react-redux";
+import {
+  setErrorMessage,
+  setShowMessage,
+  setSuccessMessage,
+} from "../../../common/redux/userSlice";
+import MessageComponent from "../../../components/message.component";
 
 const SignUpComponent = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
   const createUser = usePostNewtUser();
+  const dispatch = useDispatch();
 
   const handleSignUp = (data) => {
     const { username, email, password, comfirmPassword } = data;
@@ -45,36 +49,40 @@ const SignUpComponent = () => {
       comfirmPassword,
     };
     createUser.mutate(newUser, {
-      onSuccess: () => {
+      onSuccess: (data) => {
+        dispatch(setSuccessMessage(""));
+        dispatch(setErrorMessage(""));
+        dispatch(setSuccessMessage(data.message));
+        dispatch(setShowMessage(true));
+        setTimeout(() => {
+          dispatch(setSuccessMessage(""));
+        }, 2000);
+        navigate("/sign-in");
         reset();
       },
       onError: (error) => {
+        dispatch(setSuccessMessage(""));
+        dispatch(setErrorMessage(""));
         if (
           error.response &&
           error.response.data &&
           error.response.data.message
         ) {
-          setErrorMsg(error.response.data.message);
-          setTimeout(() => setErrorMsg(""), 3000);
+          dispatch(setErrorMessage(error.response.data.message));
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setErrorMessage(""));
+          }, 3000);
         }
       },
     });
   };
-  useEffect(() => {
-    if (createUser.data) {
-      setSuccessMsg(createUser.data.message);
-      setTimeout(() => setSuccessMsg(""), 3000);
-    }
-  }, [createUser.data]);
-
   return (
     <Div>
+      <MessageComponent />
+
       <AuthForm onSubmit={handleSubmit(handleSignUp)}>
         <SignUpFormLeft>
-          <Box>
-            {errorMsg && <Box style={styleError}>{errorMsg}</Box>}
-            {successMsg && <Box style={styleSuccess}>{successMsg}</Box>}
-          </Box>
           <AuthBody>
             <TextField
               variant='outlined'

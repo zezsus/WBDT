@@ -7,6 +7,7 @@ import ListProductElement from "../elements/listproduct.element";
 import { Product } from "../common/assets/product.style";
 import SearchFilterComponent from "../../../navigator/navbar/components/searchFilter.component";
 import { useSelector } from "react-redux";
+import MessageComponent from "../../../components/message.component";
 
 const HomeComponent = () => {
   const isShowFilter = useSelector((state) => state.products.isShowFilter);
@@ -14,6 +15,7 @@ const HomeComponent = () => {
 
   return (
     <Box>
+      <MessageComponent />
       <Product>
         <Container>
           {isShowFilter && <SearchFilterComponent />}

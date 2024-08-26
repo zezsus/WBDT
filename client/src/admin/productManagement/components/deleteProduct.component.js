@@ -3,6 +3,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
   setErrorMessage,
+  setShowMessage,
   setSuccessMessage,
 } from "../../../common/redux/userSlice";
 import { Box, Button, Divider, Modal, Typography } from "@mui/material";
@@ -25,16 +26,30 @@ const DeleteProductComponent = ({ id, accessToken }) => {
       { id, accessToken },
       {
         onSuccess: (data) => {
-          dispatch(setSuccessMessage(data.message));
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          dispatch(setSuccessMessage(data?.message));
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setSuccessMessage(""));
+          }, 3000);
           handleClose();
         },
       },
       {
         onError: (error) => {
-          if (error.response.data.message) {
-            dispatch(setErrorMessage(error.response.data.message));
-          } else {
-            dispatch(setErrorMessage("Đã xảy ra lỗi"));
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            dispatch(setErrorMessage(error?.response?.data?.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setErrorMessage(""));
+            }, 3000);
           }
         },
       }
@@ -42,6 +57,7 @@ const DeleteProductComponent = ({ id, accessToken }) => {
   };
   const handleClose = () => {
     dispatch(setShowDelete(false));
+    dispatch(setErrorMessage(""));
   };
 
   return (

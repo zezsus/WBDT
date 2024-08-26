@@ -18,6 +18,7 @@ import {
   setOrderId,
   setShowDeleteOrder,
 } from "../../../common/redux/orderSlice";
+import MessageComponent from "../../../components/message.component";
 
 const OrderDetailComponent = () => {
   const [orderDetail, setOrderDetail] = useState(null);
@@ -63,6 +64,7 @@ const OrderDetailComponent = () => {
 
   return (
     <div>
+      <MessageComponent />
       {orderDetail && (
         <Container>
           <OrderDetail>

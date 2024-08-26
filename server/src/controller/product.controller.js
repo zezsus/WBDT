@@ -24,7 +24,7 @@ const createProduct = async (req, res) => {
   ) {
     return res.status(400).json({
       status: false,
-      message: "Vui lòng điền đầy đủ thông tin",
+      message: "Vui lòng điền đầy đủ thông tin cơ bản",
     });
   }
 
@@ -98,7 +98,7 @@ const updateProduct = async (req, res) => {
   ) {
     return res.status(400).json({
       status: false,
-      message: "Vui lòng điền đầy đủ thông tin",
+      message: "Vui lòng điền đầy đủ thông tin cơ bản",
     });
   }
 
@@ -180,7 +180,7 @@ const getAllProduct = async (req, res) => {
   try {
     const query = {};
     if (search) {
-      query.name = { $regex: search, $options: "i" }; // Tìm kiếm tương đối theo tên sản phẩm, không phân biệt hoa thường
+      query.name = { $regex: search, $options: "i" };
     }
 
     if (type) {

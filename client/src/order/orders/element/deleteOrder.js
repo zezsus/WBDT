@@ -2,15 +2,18 @@
 
 import { Box, Button, Divider, Modal, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import {
-  Footer,
-} from "../../../admin/userManagerment/common/assets/delete.styles";
+import { Footer } from "../../../admin/userManagerment/common/assets/delete.styles";
 import { style } from "../../../admin/userManagerment/common/assets/modal.styles";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowDeleteOrder } from "../../../common/redux/orderSlice";
 import { useDeleteOrder } from "../../../common/hook/order.hook";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import {
+  setErrorMessage,
+  setShowMessage,
+  setSuccessMessage,
+} from "../../../common/redux/userSlice";
 
 export const DeleteOrder = () => {
   const [userId, setUserId] = useState(null);
@@ -38,8 +41,30 @@ export const DeleteOrder = () => {
       { userId, orderId, accessToken },
       {
         onSuccess: (data) => {
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          dispatch(setSuccessMessage(data?.message));
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setSuccessMessage(""));
+          }, 3000);
           handleClose();
           navigate("/all-order-detail");
+        },
+        onError: (error) => {
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            dispatch(setErrorMessage(error?.response?.data?.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setErrorMessage(""));
+            }, 3000);
+          }
         },
       }
     );
@@ -47,6 +72,7 @@ export const DeleteOrder = () => {
 
   const handleClose = () => {
     dispatch(setShowDeleteOrder(false));
+    dispatch(setErrorMessage(""));
   };
 
   return (

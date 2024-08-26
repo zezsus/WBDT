@@ -7,6 +7,7 @@ const initialState = {
   isAdminDelete: false,
   successMessage: "",
   errorMessage: "",
+  isShowMessage: false,
 };
 
 export const userSlice = createSlice({
@@ -18,6 +19,9 @@ export const userSlice = createSlice({
     },
     setAdminDelete: (state, actions) => {
       state.isAdminDelete = actions.payload;
+    },
+    setShowMessage: (state, action) => {
+      state.isShowMessage = action.payload;
     },
     setSuccessMessage: (state, actions) => {
       state.successMessage = actions.payload;
@@ -33,6 +37,7 @@ export const {
   setAdminDelete,
   setSuccessMessage,
   setErrorMessage,
+  setShowMessage,
 } = userSlice.actions;
 
 export default userSlice.reducer;

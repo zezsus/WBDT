@@ -13,9 +13,9 @@ export const useDeleteUser = () => {
   });
 };
 
-export const useGetALlUser = (accessToken) => {
+export const useGetALlUser = (page, accessToken) => {
   return useQuery({
-    queryKey: ["users"],
-    queryFn: () => getAllUser(accessToken),
+    queryKey: ["users", page],
+    queryFn: () => getAllUser(page, accessToken),
   });
 };

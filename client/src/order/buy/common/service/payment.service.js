@@ -1,11 +1,11 @@
 /** @format */
 
 import axios from "axios";
-import { authRouter } from "../apis/api";
+import { paymentRouter } from "../../../../common/apis/api";
 
-export const updateUser = async (id, data, accessToken) => {
+export const getPayment = async (accessToken) => {
   try {
-    const res = await axios.put(`${authRouter}/update-user/${id}`, data, {
+    const res = await axios.get(`${paymentRouter}/paypal-payment`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

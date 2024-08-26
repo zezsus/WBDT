@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form";
 import { useUpdateProduct } from "../common/hook";
 import {
   setErrorMessage,
+  setShowMessage,
   setSuccessMessage,
 } from "../../../common/redux/userSlice";
 import InformationUpdateProduct from "../elements/update/inforProduct";
@@ -29,6 +30,7 @@ import {
   Products,
 } from "../common/assets/create.style";
 import CloseIcon from "@mui/icons-material/Close";
+import MessageComponent from "../../../components/message.component";
 
 const UpdateProductComponent = ({ productUpdate, accessToken }) => {
   const steps = ["Thông tin cơ bản", "Cấu hình máy"];
@@ -114,15 +116,27 @@ const UpdateProductComponent = ({ productUpdate, accessToken }) => {
       {
         onSuccess: (data) => {
           dispatch(setShowUpdate(false));
-          dispatch(setSuccessMessage(data.message));
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          dispatch(setSuccessMessage(data?.message));
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setSuccessMessage(""));
+          }, 3000);
         },
-      },
-      {
         onError: (error) => {
-          if (error.response.data.message) {
-            dispatch(setErrorMessage(error.response.data.message));
-          } else {
-            dispatch(setErrorMessage("Đã xảy ra lỗi khi cập nhật thông tin"));
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            dispatch(setErrorMessage(error?.response?.data?.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setErrorMessage(""));
+            }, 3000);
           }
         },
       }
@@ -130,6 +144,7 @@ const UpdateProductComponent = ({ productUpdate, accessToken }) => {
   };
   const handleClose = () => {
     dispatch(setShowUpdate(false));
+    dispatch(setErrorMessage(""));
   };
 
   const handleOnChangeProduct = (e) => {
@@ -146,6 +161,7 @@ const UpdateProductComponent = ({ productUpdate, accessToken }) => {
 
   return (
     <Box>
+      <MessageComponent />
       <Modal
         open={isShowUpdate}
         aria-labelledby='modal-modal-title'

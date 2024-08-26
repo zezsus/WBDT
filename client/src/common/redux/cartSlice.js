@@ -4,7 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isShowDelete: false,
-  cartId: null,
+  productId: null,
 };
 
 export const cartSlice = createSlice({
@@ -14,12 +14,12 @@ export const cartSlice = createSlice({
     setShowDelete: (state, action) => {
       state.isShowDelete = action.payload;
     },
-    setCartId: (state, action) => {
-      state.cartId = action.payload;
+    setProductCartId: (state, action) => {
+      state.productId = action.payload;
     },
   },
 });
 
-export const { setShowDelete, setCartId } = cartSlice.actions;
+export const { setShowDelete, setProductCartId } = cartSlice.actions;
 
 export default cartSlice.reducer;

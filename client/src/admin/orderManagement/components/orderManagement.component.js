@@ -11,6 +11,7 @@ import {
   TableHead,
   TableRow,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import { useGetAllOrder } from "../../../common/hook/order.hook";
 import SpinnerComponent from "../../../components/spinner.component";
@@ -26,6 +27,7 @@ import {
 import DeleteOrder from "../elements/delete.element";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import UpdateOrder from "../elements/update.element";
+import MessageComponent from "../../../components/message.component";
 
 const OrderManagementComponent = () => {
   const columns = [
@@ -97,6 +99,7 @@ const OrderManagementComponent = () => {
 
   return (
     <Box>
+      <MessageComponent />
       <Paper
         sx={{ width: "100%", overflow: "hidden", boxShadow: "1px 1px 10px" }}>
         <TableContainer sx={{ maxHeight: 430 }}>
@@ -115,86 +118,107 @@ const OrderManagementComponent = () => {
                 })}
               </TableRow>
             </TableHead>
-            <TableBody>
-              {getAllOrder.data?.data?.map((order) => {
-                return (
-                  <TableRow hover role='checkbox' tabIndex={-1} key={order._id}>
-                    {columns.map((column) => {
-                      const value = column.id.includes(".")
-                        ? column.id.split(".").reduce((o, i) => o[i], order)
-                        : order[column.id];
+            {getAllOrder.data?.data && getAllOrder.data?.data?.length ? (
+              <TableBody>
+                {getAllOrder.data?.data?.map((order) => {
+                  return (
+                    <TableRow
+                      hover
+                      role='checkbox'
+                      tabIndex={-1}
+                      key={order._id}>
+                      {columns.map((column) => {
+                        const value = column.id.includes(".")
+                          ? column.id.split(".").reduce((o, i) => o[i], order)
+                          : order[column.id];
 
-                      return (
-                        <TableCell key={column.id} align={"center"}>
-                          {column.id === "action" ? (
-                            <Tooltip title='Xóa đơn hàng' arrow>
-                              <DeleteForeverOutlinedIcon
-                                color='error'
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleDeleteOrder(order._id)}
-                              />
-                            </Tooltip>
-                          ) : column.format && typeof value === "number" ? (
-                            column.format(value)
-                          ) : column.id === "isDelivered" ? (
-                            value === true ? (
-                              <span
-                                style={{
-                                  color: "orange",
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                }}>
-                                Đã giao hàng
-                                <BorderColorIcon
-                                  fontSize='small'
-                                  onClick={() => handleUpdateOrder(order)}
+                        return (
+                          <TableCell key={column.id} align={"center"}>
+                            {column.id === "action" ? (
+                              <Tooltip title='Xóa đơn hàng' arrow>
+                                <DeleteForeverOutlinedIcon
+                                  color='error'
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => handleDeleteOrder(order._id)}
                                 />
-                              </span>
+                              </Tooltip>
+                            ) : column.format && typeof value === "number" ? (
+                              column.format(value)
+                            ) : column.id === "isDelivered" ? (
+                              value === true ? (
+                                <span
+                                  style={{
+                                    color: "orange",
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}>
+                                  Đã giao hàng
+                                  <BorderColorIcon
+                                    fontSize='small'
+                                    onClick={() => handleUpdateOrder(order)}
+                                  />
+                                </span>
+                              ) : (
+                                <span
+                                  style={{
+                                    color: "red",
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}>
+                                  Chưa giao hàng{" "}
+                                  <BorderColorIcon
+                                    style={{ color: "orange" }}
+                                    fontSize='small'
+                                    onClick={() => handleUpdateOrder(order)}
+                                  />
+                                </span>
+                              )
+                            ) : column.id === "isReceived" ? (
+                              value === true ? (
+                                <span style={{ color: "orange" }}>
+                                  Đã nhận hàng
+                                </span>
+                              ) : (
+                                <span style={{ color: "red" }}>
+                                  Chưa nhận hàng
+                                </span>
+                              )
+                            ) : column.id === "isPaid" ? (
+                              value === true ? (
+                                <span style={{ color: "orange" }}>
+                                  Đã thanh toán
+                                </span>
+                              ) : (
+                                <span style={{ color: "red" }}>
+                                  Chưa thanh toán
+                                </span>
+                              )
+                            ) : column.id === "shippingAddress.phone" &&
+                              value ? (
+                              <Typography>0{value}</Typography>
                             ) : (
-                              <span
-                                style={{
-                                  color: "red",
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                }}>
-                                Chưa giao hàng{" "}
-                                <BorderColorIcon
-                                  style={{ color: "orange" }}
-                                  fontSize='small'
-                                  onClick={() => handleUpdateOrder(order)}
-                                />
-                              </span>
-                            )
-                          ) : column.id === "isReceived" ? (
-                            value === true ? (
-                              <span style={{ color: "orange" }}>
-                                Đã nhận hàng
-                              </span>
-                            ) : (
-                              <span style={{ color: "red" }}>
-                                Chưa nhận hàng
-                              </span>
-                            )
-                          ) : column.id === "isPaid" ? (
-                            value === true ? (
-                              <span style={{ color: "orange" }}>
-                                Đã thanh toán
-                              </span>
-                            ) : (
-                              <span style={{ color: "red" }}>
-                                Chưa thanh toán
-                              </span>
-                            )
-                          ) : (
-                            value
-                          )}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
+                              value
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            ) : (
+              <TableBody>
+                <TableCell
+                  colSpan={columns.length}
+                  style={{
+                    textAlign: "center",
+                    padding: "20px",
+                    fontSize: "20px",
+                  }}>
+                  Không có đơn hàng nào
+                </TableCell>
+              </TableBody>
+            )}
           </Table>
         </TableContainer>
       </Paper>

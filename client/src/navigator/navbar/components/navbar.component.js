@@ -26,10 +26,17 @@ import { useGetDetailUser } from "../../common/hook/navigator.hook";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  setBrandProduct,
   setIsSearchValue,
+  setPriceRange,
   setShowFilter,
   setShowSlider,
+  setTypeProduct,
 } from "../../../common/redux/productSlice";
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from "../../../common/redux/userSlice";
 
 const NavbarComponent = () => {
   const [userId, setUserId] = useState(null);
@@ -57,6 +64,11 @@ const NavbarComponent = () => {
     dispatch(setShowSlider(true));
     dispatch(setIsSearchValue(false));
     dispatch(setShowFilter(false));
+    dispatch(setSuccessMessage(""));
+    dispatch(setErrorMessage(""));
+    dispatch(setTypeProduct("All"));
+    dispatch(setBrandProduct("All"));
+    dispatch(setPriceRange("All"));
   };
 
   const handleClickMenu = (e) => {
@@ -115,7 +127,7 @@ const NavbarComponent = () => {
                 />
               </Tooltip>
             </IconButton>
-            <CartElement />
+            <CartElement accessToken={accessToken} />
           </NavBody>
 
           <NavFooter sx={{ cursor: "pointer" }}>

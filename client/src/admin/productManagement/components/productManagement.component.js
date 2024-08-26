@@ -46,7 +46,6 @@ const ProductManagementComponent = () => {
     },
     { id: "brand", label: "Hãng Sản Xuất", minWidth: 150 },
     { id: "type", label: "Hệ điều hành", minWidth: 150 },
-    { id: "rating", label: "Đánh Giá", minWidth: 100 },
     { id: "description", label: "Chi Tiết Sản Phẩm", minWidth: 400 },
     {
       id: "countInStock",
@@ -125,6 +124,7 @@ const ProductManagementComponent = () => {
 
   return (
     <Box>
+      <MessageComponent />
       <Box
         sx={{ pb: "10px" }}
         style={{
@@ -146,7 +146,6 @@ const ProductManagementComponent = () => {
             <Add fontSize='medium' />
           </Tooltip>
         </IconButton>
-        <MessageComponent />
       </Box>
       <Paper
         sx={{ width: "100%", overflow: "hidden", boxShadow: "1px 1px 10px" }}>
@@ -164,88 +163,103 @@ const ProductManagementComponent = () => {
                 ))}
               </TableRow>
             </TableHead>
-            <TableBody>
-              {data?.data?.map((product) => {
-                return (
-                  <TableRow
-                    hover
-                    role='checkbox'
-                    tabIndex={-1}
-                    key={product._id}>
-                    {columns.map((column) => {
-                      const value = product[column.id];
-                      return (
-                        <TableCell key={column.id} align={"center"}>
-                          {column.id === "image" ? (
-                            <CardMedia
-                              component='img'
-                              style={{ height: 80, width: "auto" }}
-                              image={value}
-                              alt='Product Image'
-                            />
-                          ) : column.id === "description" ? (
-                            <div>
-                              <Typography
-                                noWrap={!description[product._id]}
+            {data && data?.data?.length ? (
+              <TableBody>
+                {data?.data?.map((product) => {
+                  return (
+                    <TableRow
+                      hover
+                      role='checkbox'
+                      tabIndex={-1}
+                      key={product._id}>
+                      {columns.map((column) => {
+                        const value = product[column.id];
+                        return (
+                          <TableCell key={column.id} align={"center"}>
+                            {column.id === "image" ? (
+                              <CardMedia
+                                component='img'
+                                style={{ height: 80, width: "auto" }}
+                                image={value}
+                                alt='Product Image'
+                              />
+                            ) : column.id === "description" ? (
+                              <div>
+                                <Typography
+                                  noWrap={!description[product._id]}
+                                  style={{
+                                    maxWidth: "500px",
+                                    maxHeight: description[product._id]
+                                      ? "none"
+                                      : "45px",
+                                    overflow: "hidden",
+                                    textAlign: "justify",
+                                    whiteSpace: "pre-line",
+                                  }}>
+                                  {product[column.id]}
+                                </Typography>
+                                {product[column.id].length > 100 && (
+                                  <Button
+                                    color='primary'
+                                    variant='text'
+                                    onClick={() =>
+                                      handleToggleDescription(product._id)
+                                    }>
+                                    {description[product._id]
+                                      ? "Thu gọn"
+                                      : "Xem thêm"}
+                                  </Button>
+                                )}
+                              </div>
+                            ) : column.id === "action" ? (
+                              <Box
                                 style={{
-                                  maxWidth: "500px",
-                                  maxHeight: description[product._id]
-                                    ? "none"
-                                    : "80px",
-                                  overflow: "hidden",
-                                  textAlign: "justify",
+                                  display: "flex",
+                                  justifyContent: "space-evenly",
                                 }}>
-                                {product[column.id]}
-                              </Typography>
-                              {product[column.id].length > 100 && (
-                                <Button
-                                  color='primary'
-                                  variant='text'
-                                  onClick={() =>
-                                    handleToggleDescription(product._id)
-                                  }>
-                                  {description[product._id]
-                                    ? "Thu gọn"
-                                    : "Xem thêm"}
-                                </Button>
-                              )}
-                            </div>
-                          ) : column.id === "action" ? (
-                            <Box
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-evenly",
-                              }}>
-                              <Tooltip title='Sửa thông tin sản phẩm' arrow>
-                                <EditCalendarOutlinedIcon
-                                  color='warning'
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => handleUpdateProduct(product)}
-                                />
-                              </Tooltip>
+                                <Tooltip title='Sửa thông tin sản phẩm' arrow>
+                                  <EditCalendarOutlinedIcon
+                                    color='warning'
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => handleUpdateProduct(product)}
+                                  />
+                                </Tooltip>
 
-                              <Tooltip title='Xóa sản phẩm' arrow>
-                                <DeleteForeverOutlinedIcon
-                                  color='error'
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() =>
-                                    handleDeleteProduct(product._id)
-                                  }
-                                />
-                              </Tooltip>
-                            </Box>
-                          ) : column.format && typeof value === "number" ? (
-                            column.format(value)
-                          ) : (
-                            value
-                          )}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
+                                <Tooltip title='Xóa sản phẩm' arrow>
+                                  <DeleteForeverOutlinedIcon
+                                    color='error'
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() =>
+                                      handleDeleteProduct(product._id)
+                                    }
+                                  />
+                                </Tooltip>
+                              </Box>
+                            ) : column.format && typeof value === "number" ? (
+                              column.format(value)
+                            ) : (
+                              value
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            ) : (
+              <TableBody>
+                <TableCell
+                  colSpan={columns.length}
+                  style={{
+                    textAlign: "center",
+                    padding: "20px",
+                    fontSize: "20px",
+                  }}>
+                  Không có sản phẩm nào
+                </TableCell>
+              </TableBody>
+            )}
           </Table>
         </TableContainer>
       </Paper>

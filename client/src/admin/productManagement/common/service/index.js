@@ -10,6 +10,8 @@ export const createProduct = async (newProduct, accessToken) => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
+    console.log("res.data", res.data);
+
     return res.data;
   } catch (error) {
     throw error;

@@ -5,3 +5,4 @@ export const authRouter = `${router}/auth`;
 export const productRouter = `${router}/products`;
 export const cartRouter = `${router}/carts`;
 export const orderRouter = `${router}/orders`;
+export const paymentRouter = `${router}/payment`;

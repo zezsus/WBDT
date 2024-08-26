@@ -3,9 +3,9 @@
 import axios from "axios";
 import { cartRouter } from "../apis/api";
 
-export const createCart = async (data, accessToken) => {
+export const createCart = async (userId, data, accessToken) => {
   try {
-    const res = await axios.post(`${cartRouter}/create`, data, {
+    const res = await axios.post(`${cartRouter}/create/${userId}`, data, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -25,13 +25,17 @@ export const getCart = async (userId) => {
   }
 };
 
-export const deleteCart = async (cartId, accessToken) => {
+export const deleteCart = async (userId, productId, accessToken) => {
   try {
-    const res = await axios.delete(`${cartRouter}/delete/${cartId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const res = await axios.put(
+      `${cartRouter}/delete/${userId}`,
+      { productId },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     return res.data;
   } catch (error) {
     throw error;

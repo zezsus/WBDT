@@ -16,14 +16,15 @@ export const deleteUser = async (id, accessToken) => {
   }
 };
 
-export const getAllUser = async (accessToken) => {
+export const getAllUser = async (page, accessToken) => {
   try {
-    const res = await axios.get(`${authRouter}/get-all-user`, {
+    const res = await axios.get(`${authRouter}/get-all-user?page=${page}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return res.data.data;
+
+    return res.data;
   } catch (error) {
     throw error;
   }

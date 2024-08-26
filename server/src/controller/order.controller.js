@@ -1,12 +1,12 @@
 /** @format */
 
 const Order = require("../modals/order.modal");
+const Product = require("../modals/product.modal");
 
 const createOrder = async (req, res) => {
   const {
     orderItems,
     itemsPrice,
-    shippingPrice,
     totalPrice,
     shippingAddress,
     user,
@@ -16,22 +16,24 @@ const createOrder = async (req, res) => {
     paymentMethod,
   } = req.body;
 
+  if (!orderItems) {
+    return res.status(400).json({
+      status: false,
+      message: "Vui lòng chọn sản phẩm muốn mua.",
+    });
+  }
+
+  if (!shippingAddress.address || !shippingAddress.phone) {
+    return res.status(400).json({
+      status: false,
+      message: "Vui lòng nhập đầy đủ địa chỉ và số điện thoại",
+    });
+  }
+
   if (!paymentMethod) {
     return res.status(400).json({
       status: false,
       message: "Vui lòng chọn phương thức thanh toán",
-    });
-  }
-
-  if (
-    !shippingAddress.name ||
-    !shippingAddress.address ||
-    !shippingAddress.phone ||
-    !orderItems
-  ) {
-    return res.status(400).json({
-      status: false,
-      message: "Vui lòng điền đầy đủ thông tin người dùng và chọn sản phẩm",
     });
   }
 
@@ -40,7 +42,6 @@ const createOrder = async (req, res) => {
       orderItems,
       shippingAddress,
       itemsPrice,
-      shippingPrice,
       totalPrice,
       user,
       isPaid,
@@ -50,9 +51,22 @@ const createOrder = async (req, res) => {
     });
     await newOrder.save();
 
+    try {
+      await Product.findOneAndUpdate(
+        { _id: orderItems.product },
+        { $inc: { countInStock: -orderItems.quantity } },
+        { new: true }
+      );
+    } catch (error) {
+      return res.status(500).json({
+        status: false,
+        message: "Lỗi khi cập nhật sản phẩm",
+      });
+    }
+
     return res.status(201).json({
       status: true,
-      message: "Tạo đơn hàng thành công",
+      message: "Đặt hàng thành công",
       data: newOrder,
     });
   } catch (e) {

@@ -24,6 +24,11 @@ import {
   Header,
   Orders,
 } from "../common/updateOrder.style";
+import {
+  setErrorMessage,
+  setShowMessage,
+  setSuccessMessage,
+} from "../../../common/redux/userSlice";
 
 export const UpdateOrder = () => {
   const [userId, setUserId] = useState(null);
@@ -58,8 +63,33 @@ export const UpdateOrder = () => {
     updateOrder.mutate(
       { userId, updateData, accessToken },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          dispatch(
+            setSuccessMessage("Cập nhật trạng thái giao hàng thành công")
+          );
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setSuccessMessage(""));
+          }, 3000);
+
           handleClose();
+        },
+        onError: (error) => {
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            dispatch(setErrorMessage(error?.response?.data?.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setErrorMessage(""));
+            }, 3000);
+          }
         },
       }
     );
@@ -67,6 +97,7 @@ export const UpdateOrder = () => {
 
   const handleClose = () => {
     dispatch(setShowUpdateOrder(false));
+    dispatch(setErrorMessage(""));
   };
 
   return (

@@ -7,11 +7,8 @@ import {
   AuthForm,
   AuthHeader,
   Div,
-  styleError,
-  styleSuccess,
 } from "../../common/assets/auth.style";
 import {
-  Box,
   Button,
   Checkbox,
   FormControlLabel,
@@ -25,11 +22,17 @@ import {
   FormLoginRight,
 } from "../../common/assets/signin.style";
 import { useSignIn } from "../../common/hook/auth.hook";
+import MessageComponent from "../../../components/message.component";
+import { useDispatch } from "react-redux";
+import {
+  setErrorMessage,
+  setShowMessage,
+  setSuccessMessage,
+} from "../../../common/redux/userSlice";
 
 const SignInComponent = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
+  const dispatch = useDispatch();
 
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
@@ -47,16 +50,28 @@ const SignInComponent = () => {
             localStorage.setItem("accessToken", data?.accessToken);
           }
           location?.state ? navigate(location?.state) : navigate("/");
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
+          dispatch(setSuccessMessage(data.message));
+          dispatch(setShowMessage(true));
+          setTimeout(() => {
+            dispatch(setSuccessMessage(""));
+          }, 2000);
           reset();
         },
         onError: (error) => {
+          dispatch(setSuccessMessage(""));
+          dispatch(setErrorMessage(""));
           if (
             error.response &&
             error.response.data &&
             error.response.data.message
           ) {
-            setErrorMsg(error.response.data.message);
-            setTimeout(() => setErrorMsg(""), 3000);
+            dispatch(setErrorMessage(error.response.data.message));
+            dispatch(setShowMessage(true));
+            setTimeout(() => {
+              dispatch(setErrorMessage(""));
+            }, 3000);
           }
         },
       }
@@ -65,6 +80,7 @@ const SignInComponent = () => {
 
   return (
     <Div>
+      <MessageComponent />
       <AuthForm onSubmit={handleSubmit(handleSignIn)}>
         <FormLoginLeft>
           <AuthHeader variant='h5'>Đăng nhập</AuthHeader>
@@ -84,11 +100,6 @@ const SignInComponent = () => {
         </FormLoginLeft>
 
         <FormLoginRight>
-          <Box>
-            {errorMsg && <Box style={styleError}>{errorMsg}</Box>}
-            {successMsg && <Box style={styleSuccess}>{successMsg}</Box>}
-          </Box>
-
           <AuthBody>
             <TextField
               type='email'
